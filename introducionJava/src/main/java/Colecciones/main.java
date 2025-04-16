@@ -3,12 +3,14 @@ package Colecciones;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 
 public class main {
 
@@ -67,5 +69,27 @@ public class main {
 		Set<Integer> dni = new HashSet();
 		
 	}
-
+	
+	
+	public static void recorrido()
+	{
+		ArrayList<String> nombres = new ArrayList<>();
+		
+		for(int i=0; i<=nombres.size(); i++) 
+		{
+			nombres.get(i);
+		}
+		
+		for(String item : nombres) 
+		{
+			System.out.println( item );
+		}
+		
+		Iterator it = nombres.iterator();
+		while( it.hasNext() ) 
+		{
+			System.out.println( it.next() );
+		}
+		
+	}
 }
