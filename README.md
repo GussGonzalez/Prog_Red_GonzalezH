@@ -1,1 +1,5 @@
-# Programaci-nSobreRedes2025
+# Programación Sobre Redes 2025
+Gonzalez Herrera Agustina Sol
+6to1ra Computación
+ET32 de14
+Profesor: Gonzalo Nicolás Consorti
