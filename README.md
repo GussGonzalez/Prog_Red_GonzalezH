@@ -6,7 +6,7 @@
 ## Gonzalo Nicolás Consorti
 Profesor de la materia
 
-![Strawberry Lace Gif Divider](	https://adorotedevote.neocities.org/images/straw.gif )
+<img src="https://adorotedevote.neocities.org/images/straw.gif" width="600" height="100">
 <!-- No te fijes el link profe, no pude encontrar la fuente original, habían muchas resubidas :( -->
 
 # Ramas/Branches
