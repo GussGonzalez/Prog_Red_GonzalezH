@@ -19,15 +19,15 @@ public class main {
 		UsandoSystem punto1 = new UsandoSystem();
 		UsandoReader punto2 = new UsandoReader();
 		
-		int opcion = -1; //lo que elige el usuario del menu
-		int linea;
-		String temporal = "";
-		
 		//punto1.ejercicio1A();
 		
 		//loop, menu infinito
 		while( true )
 		{
+		
+            int opcion = -1; //lo que elige el usuario del menu
+            int linea;
+            String temporal = "";            
 			//Menu en si
 			//ps.println(ANSI_PINK.concat("       「 ✦ Menu ✦ 」       ")); //con color
 			ps.println("\n --- --- 「 ✦ Menu ✦ 」 --- --- ");
@@ -52,7 +52,8 @@ public class main {
             
             try {
 				while ( (linea = System.in.read()) != 13) { //mientras no se haya presionado enter
-					temporal = temporal + (char)linea;
+                    if(linea != 10)
+					    temporal = temporal + (char)linea;
 				}//end while 
 				
 				try {
