@@ -1,7 +1,7 @@
 package Guia1;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
+//import java.io.InputStreamReader;
 import java.io.PrintStream;
 
 public class main {
@@ -11,7 +11,7 @@ public class main {
 	public static void main(String[] args) {
 		
 		//setup
-		InputStreamReader isr = new InputStreamReader(System.in);
+		//InputStreamReader isr = new InputStreamReader(System.in);
 		PrintStream ps = new PrintStream(System.out);
 		PrintStream  psErr = new PrintStream(System.err);
 		
@@ -52,7 +52,7 @@ public class main {
             
             try {
 				while ( (linea = System.in.read()) != 13) { //mientras no se haya presionado enter
-                    if(linea != 10)
+                    if(linea != 10)//si no es un LF (line feed), básicamente no toma el byte extra de salto de línea que se estaba guardando
 					    temporal = temporal + (char)linea;
 				}//end while 
 				
@@ -65,51 +65,53 @@ public class main {
                     case 1:
                         punto1.ejercicio1A();
                         break;
-                    /* case 2:
-                        ps.println(ejercicios1.calcularAnguloRestante(br, ps));
+                    case 2:
+                        punto1.ejercicio1B();
                         break;
                     case 3:
-                        ps.println(ejercicios1.calcularPerimetroCuadrado(br, ps));
+                        punto1.ejercicio1C();
                         break;
                     case 4:
-                        ps.println(ejercicios1.FahrenheitaCel(br, ps));
+                        punto1.ejercicio1D();
                         break;
                     case 5:
-                        ps.println(ejercicios1.Dias(br, ps));
+                        punto1.ejercicio1E();
                         break;
                     case 6:
-                        ps.println(ejercicios1.PlanesDePago(br, ps));
+                        punto1.ejercicio1F();
                         break;
                     case 7:
-                        ps.println(ejercicios1.MesPorSigno(br, ps));
+                        punto1.ejercicio1G();
                         break;
+                    /*
                     case 8:
-                        ejercicios2.ordenarApellidos(br, ps);
+                        punto2.ejercicio1A();
                         break;
                     case 9:
-                        ejercicios2.menor(br, ps);
+                        punto2.ejercicio1B();
                         break;
                     case 10:
-                        ejercicios2.parOImpar(br, ps);
+                        punto2.ejercicio1C();
                         break;
                     case 11:
-                        ejercicios2.divisibleMayorPorMenor(br, ps);
+                        punto2.ejercicio1D();
                         break;
                     case 12:
-                        ejercicios2.signoZodiacal(br, ps);
+                        punto2.ejercicio1F();
                         break;
                     case 13:
-                        ejercicios2.apellidoMasLargo(br, ps);
+                        punto2.ejercicio1G();
                         break;
                     case 14:
-                        ejercicios2.tablaMultiplicar(br, ps);
+                        punto2.ejercicio1H();
                         break;
                     case 15:
-                        ejercicios2.esPrimo(br, ps);
+                        punto2.ejercicio1I();
                         break;
+                        */
                     case 0:
-                        ps.println("Saliendo del programa.");
-                        break;*/
+                        ps.println("¡Saliendo del programa! Gracias por probar :3");
+                        break;
                     default:
                         ps.println("Opción inválida. Por favor, ingrese un número del menú.");
                 }//end switch
