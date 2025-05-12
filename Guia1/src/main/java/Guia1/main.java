@@ -83,30 +83,30 @@ public class main {
                     case 7:
                         punto1.ejercicio1G();
                         break;
-                    /*
                     case 8:
-                        punto2.ejercicio1A();
+                        punto2.ejercicio2A();
                         break;
+                        /*
                     case 9:
-                        punto2.ejercicio1B();
+                        punto2.ejercicio2B();
                         break;
                     case 10:
-                        punto2.ejercicio1C();
+                        punto2.ejercicio2C();
                         break;
                     case 11:
-                        punto2.ejercicio1D();
+                        punto2.ejercicio2D();
                         break;
                     case 12:
-                        punto2.ejercicio1F();
+                        punto2.ejercicio2F();
                         break;
                     case 13:
-                        punto2.ejercicio1G();
+                        punto2.ejercicio2G();
                         break;
                     case 14:
-                        punto2.ejercicio1H();
+                        punto2.ejercicio2H();
                         break;
                     case 15:
-                        punto2.ejercicio1I();
+                        punto2.ejercicio2I();
                         break;
                         */
                     case 0:
