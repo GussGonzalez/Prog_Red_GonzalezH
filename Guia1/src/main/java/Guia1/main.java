@@ -86,7 +86,6 @@ public class main {
                     case 8:
                         punto2.ejercicio2A();
                         break;
-                        /*
                     case 9:
                         punto2.ejercicio2B();
                         break;
@@ -105,10 +104,7 @@ public class main {
                     case 14:
                         punto2.ejercicio2H();
                         break;
-                    case 15:
-                        punto2.ejercicio2I();
-                        break;
-                        */
+
                     case 0:
                         ps.println("¡Saliendo del programa! Gracias por probar :3");
                         break;
@@ -135,6 +131,7 @@ public class main {
             
 		}//end while menu
 
+		System.exit(0); // Termina completamente el código
 	} //end objeto main
 
 }//end clase main
