@@ -1,0 +1,81 @@
+package TP1;
+
+import java.io.IOException;
+import java.io.PrintStream;
+
+public class main {
+
+	public static void main(String[] args) {
+
+		PrintStream ps = new PrintStream(System.out);
+		PrintStream  psErr = new PrintStream(System.err);
+		
+		ejercicio1 ej1 = new ejercicio1();
+		ejercicio2 ej2 = new ejercicio2();
+		
+		
+		//loop, menu infinito
+				while( true )
+				{
+				
+		            int opcion = -1; //lo que elige el usuario del menu
+		            int linea;
+		            String temporal = "";
+		            
+					//Menu en si
+					ps.println("\n --- --- 「 ✦ Menu ✦ 」 --- --- ");
+					
+					ps.println("   1.  	(Ejercicio 1)");
+		            ps.println("   2.  	(Ejercicio 2)");
+		            ps.println("   0.  	(Salir)");
+		            ps.print("¡ Ingresa el número del ejercicio que se desea ejecutar ! : ");
+		            
+		            try {
+						while ( (linea = System.in.read()) != 13) { //mientras no se haya presionado enter
+		                    if(linea != 10)//si no es un LF (line feed), básicamente no toma el byte extra de salto de línea que se estaba guardando
+							    temporal = temporal + (char)linea;
+						}//end while 
+						
+						try {
+							Integer.parseInt(String.valueOf((String)temporal)); //chequear que el valor ingresado sea un número
+							
+							opcion = Integer.parseInt(temporal);
+							
+							switch (opcion) {
+		                    case 1:
+		                        ej1.solution();
+		                        break;
+		                    case 2:
+		                        //ej2.solution(ej1.solution());
+		                        break;
+		                    case 0:
+		                        ps.println("¡Saliendo del programa! Gracias por probar :3");
+		                        break;
+		                    default:
+		                        ps.println("Opción inválida. Por favor, ingrese un número del menú.");
+		                }//end switch
+
+							if (opcion == 0) {
+		                    break; 
+							} 
+		                
+		                
+						}
+						catch(NumberFormatException e){ //en caso de no serlo, tira error
+							psErr.println("Valor no válido. Ingresa un número.");
+							continue;
+						}//end try/catch
+						
+						
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						psErr.println("Error al leer la entrada. Intenta nuevamente.");
+					}//end try/catch
+		            
+				}//end while menu
+
+				System.exit(0); // Termina completamente el código
+
+	}
+
+}

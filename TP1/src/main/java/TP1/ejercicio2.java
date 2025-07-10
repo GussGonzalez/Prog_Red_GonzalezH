@@ -1,0 +1,27 @@
+package TP1;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+
+public class ejercicio2 {
+	
+	InputStreamReader isr = new InputStreamReader(System.in);
+	PrintStream ps = new PrintStream(System.out);
+	PrintStream  psErr = new PrintStream(System.err);
+	BufferedReader br = new BufferedReader (isr);
+	
+	//métodos extra
+	public void vaciar() {
+		try {
+			if (System.in.available() > 0) {
+			    br.readLine(); // flush leftover line
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}//end try/catch
+	}//end vaciar
+	
+}
