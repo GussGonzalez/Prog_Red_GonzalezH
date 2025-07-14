@@ -13,6 +13,9 @@ public class main {
 		ejercicio1 ej1 = new ejercicio1();
 		ejercicio2 ej2 = new ejercicio2();
 		
+		int[] vector1 = new int[5];
+	    int[] vector2 = new int[5];
+		
 		
 		//loop, menu infinito
 				while( true )
@@ -43,10 +46,10 @@ public class main {
 							
 							switch (opcion) {
 		                    case 1:
-		                        ej1.solution();
+		                        ej1.solution(vector1, vector2);
 		                        break;
 		                    case 2:
-		                        //ej2.solution(ej1.solution());
+		                        ej2.solution(vector1, vector2);
 		                        break;
 		                    case 0:
 		                        ps.println("¡Saliendo del programa! Gracias por probar :3");
@@ -57,11 +60,10 @@ public class main {
 
 							if (opcion == 0) {
 		                    break; 
-							} 
+							}//end if
 		                
 		                
-						}
-						catch(NumberFormatException e){ //en caso de no serlo, tira error
+						} catch(NumberFormatException e){ //en caso de no serlo, tira error
 							psErr.println("Valor no válido. Ingresa un número.");
 							continue;
 						}//end try/catch
