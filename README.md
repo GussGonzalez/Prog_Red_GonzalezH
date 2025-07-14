@@ -16,7 +16,7 @@ Profesor de la materia
 
 # Contenido de la rama
 - Carpeta TP1
-   - src/main/java/Guia1
+   - src/main/java/TP1
      - main.java (clase main)
      - ejercicio1.java (clase del ejercicio 1)
      - ejercicio2.java (clase del ejercicio 2)
