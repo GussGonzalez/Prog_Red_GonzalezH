@@ -39,18 +39,19 @@ public class addData {
 			vaciar();
 			
 			BufferedReader brF = new BufferedReader (new FileReader (datos));
-			String inicial = "";
 			
-			if ( !verifLetra(nuevaLetra, brF ) ) {
+			while ( !verifLetra(nuevaLetra, brF ) ) {
 				ps.println(colors.RED + "Dato no válido. Por favor ingrese una única letra" + colors.RESET);
-			}else {
-				brF.close();
-				PrintStream psF = new PrintStream ( new FileOutputStream(datos) );
-				
-				if( verifPalabra(br.readLine(), nuevaLetra) ) {
-				}
-				
-			}//end if/else
+			}//end while
+			
+			brF.close();
+			PrintStream psF = new PrintStream ( new FileOutputStream(datos) );
+			
+			for (int i = 0; i<5 ; i++) {
+				while (verifPalabra(br.readLine(), nuevaLetra)){
+					ps.println(colors.YELLOW + "Dato no válido. Por favor ingrese una palabra cuya inicial coincida con la letra ingresada anteriormente." + colors.RESET);
+				}//end while
+			}//end for
 			
 		} catch (FileNotFoundException e) {
 			ps.println(colors.RED + "Ha ocurrido un error encontrando al archivo, por favor intente nuevamente" + colors.RESET);
@@ -89,8 +90,8 @@ public class addData {
 		boolean valido = true;
 		String i = String.valueOf(palabra.charAt(0));
 
-		if( i == inicial && i != null){
-			
+		if( i != inicial || i == null){
+			valido = false;
 		}//end if/else
 		
 		return valido;
