@@ -14,6 +14,7 @@ public class main {
 		PrintStream ps = new PrintStream(System.out);
 		BufferedReader br = new BufferedReader(isr);
 		
+		addData agregar = new addData();
 		
 		new reparar();
 		
@@ -36,7 +37,7 @@ public class main {
 					
 					switch (opcion) {
 	                case 1:
-						//addData();
+						agregar.addingData();
 	                    break;
 	                case 2:
 						//eraseData();
