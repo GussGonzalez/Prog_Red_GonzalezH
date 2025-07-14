@@ -34,21 +34,65 @@ public class addData {
 		File datos = new File("..\\examen_1\\datos.CSV");
 		
 		try {
-			BufferedReader brF = new BufferedReader (new FileReader (datos));
-			String linea = "";
-			
 			ps.println(colors.YELLOW + "Ingrese una nueva letra para jugar!" + colors.RESET);
 			String nuevaLetra = br.readLine();
+			vaciar();
 			
-			while( (linea = brF.readLine()) != null) {
+			BufferedReader brF = new BufferedReader (new FileReader (datos));
+			String inicial = "";
+			
+			if ( !verifLetra(nuevaLetra, brF ) ) {
+				ps.println(colors.RED + "Dato no válido. Por favor ingrese una única letra" + colors.RESET);
+			}else {
+				brF.close();
+				PrintStream psF = new PrintStream ( new FileOutputStream(datos) );
 				
+				if( verifPalabra(br.readLine(), nuevaLetra) ) {
+				}
 				
-			}
+			}//end if/else
 			
 		} catch (FileNotFoundException e) {
 			ps.println(colors.RED + "Ha ocurrido un error encontrando al archivo, por favor intente nuevamente" + colors.RESET);
 		} catch (IOException e) {
 			ps.println(colors.RED + "Ha ocurrido un error en la entrada de datos, por favor intente de nuevo" + colors.RESET);
 		}//end try/catch
+	}//end adding data
+	
+	
+	
+	private boolean verifLetra(String newInitial, BufferedReader brF) {
+		boolean valido = true;
+		String linea = "";
+		
+		if ( String.valueOf(newInitial.charAt(1)) != null) { //Que sea un único caracter y que se pueda convertir a un String
+			valido = false;
+		}else {
+			try {
+				while( (linea = brF.readLine()) != null) {
+					
+					if (newInitial == String.valueOf( linea.charAt(0) )) {//si la nueva letra es igual a la inicial
+						valido = false;
+					}//end if
+				}//end while
+				
+			} catch (IOException e) {
+				ps.println(colors.RED + "Ha ocurrido un error en la lectura de datos, por favor intente de nuevo" + colors.RESET);
+			}//end try/catch
+		}//end if/else
+		
+		return valido;
+	}//end verifLetra
+	
+	
+	private boolean verifPalabra(String palabra, String inicial) {
+		boolean valido = true;
+		String i = String.valueOf(palabra.charAt(0));
+
+		if( i == inicial && i != null){
+			
+		}//end if/else
+		
+		return valido;
 	}
 }
