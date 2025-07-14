@@ -47,10 +47,15 @@ public class addData {
 			brF.close();
 			PrintStream psF = new PrintStream ( new FileOutputStream(datos) );
 			
-			for (int i = 0; i<5 ; i++) {
-				while (verifPalabra(br.readLine(), nuevaLetra)){
+			String[] nuevaLinea = new String[4];
+			
+			for (int i = (linea.indexOf(".")); i<4 ; i++) {
+				String palabra = br.readLine();
+				while (verifPalabra(palabra, nuevaLetra)){
 					ps.println(colors.YELLOW + "Dato no válido. Por favor ingrese una palabra cuya inicial coincida con la letra ingresada anteriormente." + colors.RESET);
 				}//end while
+				
+				nuevaLinea[i] = palabra;
 			}//end for
 			
 		} catch (FileNotFoundException e) {
