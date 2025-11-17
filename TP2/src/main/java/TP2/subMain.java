@@ -39,6 +39,7 @@ public class subMain {
 		
 		if (txt == "") {
 			ps.println(colors.RED + "Input vacío, no válido \n" + colors.RESET);
+			answer = "null";
 			
 		}else {
 			try {
@@ -51,7 +52,10 @@ public class subMain {
 	                Float.parseFloat(txt.replace(',', '.'));
 	                answer = "Float";
 	                
-				} catch (NumberFormatException e2) { }//end try/catch
+				} catch (NumberFormatException e2) { 
+					ps.println(colors.RED + "Input no válido \n" + colors.RESET);
+					answer = "null";
+				}//end try/catch
 			}//end try/catch
 		}//end if/else
 		
@@ -61,7 +65,7 @@ public class subMain {
 	
 	
 	public int convertNumI(String txt, String txtEs) {
-		if (txt != null || txtEs != "String") {
+		if (txt != null || txtEs == "Integer") {
 				return Integer.parseInt(txt);
 		}else{
 			ps.println(colors.RED + "Entrada de datos incorrecta o no válida. No se puede convertir en un número\n" + colors.RESET);
@@ -71,7 +75,7 @@ public class subMain {
 	
 	
 	public Float convertNumF(String txt, String txtEs) {
-		if (txt != null || txtEs != "String") {
+		if (txt != null || txtEs == "Float") {
 				return Float.parseFloat(txt.replace(',', '.'));
 		}else{
 			ps.println(colors.RED + "Entrada de datos incorrecta o no válida. No se puede convertir en un número\n" + colors.RESET);
@@ -89,27 +93,27 @@ public class subMain {
 				psf.close();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-				ps.println(colors.RED + "\n No se pudo crear el archivo, porf favor intente de nuevo. \n" + colors.RESET);
+				ps.println(colors.RED + "\n No se pudo crear el archivo, por favor intente de nuevo. \n" + colors.RESET);
 			}//end try/catch
 		}//end if/else
 	}//crearInventario
 	
 	
 	
-	public void pedirDatos(String prodName, Float compra, Float venta, Integer stock) {
+	public void pedirDatos() {		
 		Boolean esDatType = false;
 		String temporal;
 		
 		ps.println("\n --- --- 「  Por favor ingrese los datos pedidos a continuación.  」 --- --- \n");
 		
 		ps.println(colors.YELLOW + "Nombre del producto: " + colors.RESET);
-		prodName = leerConsola();
+		String prodName = leerConsola();
 		
 		
-		ps.println("Precio de compra: " + colors.RESET);
+		ps.println(colors.YELLOW + "Precio de compra: " + colors.RESET);
 		while ( esDatType == false) {
-			if (  textoEs( temporal = leerConsola() ) == "Float" ) {
-				compra = convertNumF(temporal, textoEs(temporal));
+			if (  textoEs( temporal = leerConsola() ) == "Float" ) { //si no funciona es porque no está tomando bien el float, hacer un println con textoes(temporal)
+				Float compra = convertNumF(temporal, textoEs(temporal));
 				esDatType = true;
 			}else{
 				ps.println(colors.RED + "\n Valor no válido, por favor revise que sus datos tengan el formato correcto e intente de nuevo." + colors.RESET);
@@ -121,7 +125,7 @@ public class subMain {
 		ps.println(colors.YELLOW + "Precio de venta: " + colors.RESET);
 		while ( esDatType == false) {
 			if (  textoEs( temporal = leerConsola() ) == "Float" ) {
-				venta = convertNumF(temporal, textoEs(temporal));
+				Float venta = convertNumF(temporal, textoEs(temporal));
 				esDatType = true;
 			}else{
 				ps.println(colors.RED + "\n Valor no válido, por favor revise que sus datos tengan el formato correcto e intente de nuevo." + colors.RESET);
@@ -133,7 +137,7 @@ public class subMain {
 		ps.println(colors.YELLOW + "Stock: " + colors.RESET);
 		while ( esDatType == false) {
 			if (  textoEs( temporal = leerConsola() ) == "Integer" ) {
-				stock = convertNumI(temporal, textoEs(temporal));
+				Integer stock = convertNumI(temporal, textoEs(temporal));
 				esDatType = true;
 			}else{
 				ps.println(colors.RED + "\n Valor no válido, por favor revise que sus datos tengan el formato correcto e intente de nuevo." + colors.RESET);
