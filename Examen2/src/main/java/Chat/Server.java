@@ -244,7 +244,7 @@ public class Server {
     
     class HiloServidor extends Thread {
         ServerSocket server;
-        int puerto = 7777;
+        int puerto = 5000;
         Socket sockAux;
         
         PrintStream ps = new PrintStream(System.out);
@@ -266,6 +266,7 @@ public class Server {
             	try {
                 	ps.println("Esperando conexion con un cliente");
                 	sockAux = server.accept();
+                	ps.println(colors.YELLOW + "BIENVENIDO AL SERVIDOR LOCAL" + colors.RESET);
                 	ps.println(colors.YELLOW + "Cliente conectado: " + sockAux.getInetAddress().getHostAddress() + colors.RESET);
                 	
                 	disCliente = new DataInputStream(sockAux.getInputStream());

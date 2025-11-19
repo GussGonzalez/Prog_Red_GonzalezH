@@ -22,7 +22,7 @@ public class Cliente {
     DataOutputStream dosServidor = null;
     BufferedReader buff = new BufferedReader(new InputStreamReader(System.in));
     InetAddress IP = null;
-    int puerto = 7777;
+    int puerto = 5000;
     Socket sock = null;
     boolean isConected = false;
     private String sharedKey = "";
@@ -71,49 +71,18 @@ public class Cliente {
                     msg = msg.trim();
                     
                     if (msg.equals("")) { ps.print("\t->"); continue; }
-                    if (msg.equalsIgnoreCase("/salir")) {
-                        dosServidor.writeUTF("/salir");
+                    
+                    if (msg.equalsIgnoreCase("/logout")) {
+                        dosServidor.writeUTF("/logout");
                         dosServidor.flush();
                         break;
                         
-                    } else if (msg.equalsIgnoreCase("/listar")) {
-                        dosServidor.writeUTF("/listar");
-                        dosServidor.flush();
-                        
-                    } else if (msg.equalsIgnoreCase("/verComandos") || msg.equalsIgnoreCase("/ayuda")) {
+                    } else if(msg.equalsIgnoreCase("/hi")){
+                    	ps.println(colors.BLUE + "BIENVENIDO AL SERVIDOR LOCAL" + colors.RESET);
+                    	
+                    } else if ( msg.equalsIgnoreCase("/verComandos") ) {
                         comandos();
                         
-                    } else if (msg.startsWith("/msg ")) {
-                        String[] parts = msg.split(" ", 3);
-                        
-                        if (parts.length < 3) {
-                            ps.println(colors.BLUE + "Uso: /msg usuario mensaje" + colors.RESET);
-                            ps.print("\t->");
-                            continue;
-                        }//end if
-                        
-                        String to = parts[1];
-                        String texto = parts[2];
-                        enviarMsgPrivado(to, texto);
-                        
-                    } else if (msg.startsWith("/enviarArchivo ")) {
-                        String[] parts = msg.split(" ", 3);
-                        if (parts.length < 2) {
-                            ps.println(colors.BLUE + "Uso: /enviarArchivo usuario [ruta]" + colors.RESET);
-                            ps.print("\t->");
-                            continue;
-                        }//end if
-                        
-                        String to = parts[1];
-                        String ruta = (parts.length == 3) ? parts[2] : null;
-                        
-                        if (ruta == null || ruta.trim().isEmpty()) {
-                            ps.println(colors.BLUE + "Falta ruta. Uso: /enviarArchivo usuario ruta" + colors.RESET);
-                            ps.print("\t->");
-                            continue;
-                        }//end if
-                        
-                        enviarArchivoPrivado(to, ruta);
                     } else {
                         broadcastTexto(msg);
                     }//end if/else
@@ -217,12 +186,9 @@ public class Cliente {
     
     private void comandos() {
         ps.println(colors.YELLOW + "Comandos disponibles:" + colors.RESET);
-        ps.println("/salir - desconectarse");
-        ps.println("/listar - ver usuarios conectados");
+        ps.println("/hi - vuelve a enviar el mensaje de bienvenida");
+        ps.println("/logout - desconectarse");
         ps.println("/verComandos - mostrar comandos");
-        ps.println("/msg [usuario] [mensaje] - mensaje privado");
-        ps.println("/enviarArchivo [usuario] [ruta] - enviar archivo");
-        ps.println("/ayuda - ayuda");
     }//end comandos
 
     
@@ -251,39 +217,7 @@ public class Cliente {
         }//end try/catch
     }//end enviarMsgPrivado
 
-    
-    private void enviarArchivoPrivado(String to, String ruta) {
-        try {
-            File f = new File(ruta);
-            if (!f.exists() || !f.isFile()) { ps.println(colors.BLUE + "Archivo no encontrado." + colors.RESET); return; }//end if
-            
-            if (f.length() > 10 * 1024 * 1024) { ps.println(colors.BLUE + "Archivo demasiado grande (límite 10 MB)." + colors.RESET); return; }//end if
-            
-            byte[] fileBytes;
-            
-            try (FileInputStream fis = new FileInputStream(f)) {
-                fileBytes = fis.readAllBytes();
-            }//end try
-            
-            byte[] iv = new byte[16];
-            sr.nextBytes(iv);
-            byte[] cipher = sec.encriptarBytes(sharedKey, iv, fileBytes);
-            
-            synchronized (dosServidor) {
-                dosServidor.writeUTF("FORWARD::PRIVATE");
-                dosServidor.writeUTF(to);
-                dosServidor.writeInt(iv.length); dosServidor.write(iv);
-                dosServidor.writeInt(cipher.length); dosServidor.write(cipher);
-                dosServidor.writeUTF("FILE");
-                dosServidor.writeUTF(f.getName());
-                dosServidor.flush();
-            }//end synchronized
-            
-            ps.println(colors.BLACK + "Archivo enviado a " + to + colors.RESET);
-        } catch (Exception e) {
-            ps.println(colors.BLACK + "Error al enviar archivo: " + e.getMessage() + colors.RESET);
-        }//end try/catch
-    }//end enviarArchivoPrivado
+ 
 
     private void broadcastTexto(String texto) {
         try {
