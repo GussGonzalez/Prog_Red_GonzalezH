@@ -259,7 +259,36 @@ public class Server {
             }//end try/catch
             
         }//end HiloServidor
-    }//end HiloServidor class
           
-	
+        @Override
+    	public void run() {
+        	while (true) {
+            	try {
+                	ps.println("Esperando conexion con un cliente");
+                	sockAux = server.accept();
+                	ps.println(colors.YELLOW + "Cliente conectado: " + sockAux.getInetAddress().getHostAddress() + colors.RESET);
+                	
+                	disCliente = new DataInputStream(sockAux.getInputStream());
+                	dosCliente = new DataOutputStream(sockAux.getOutputStream());
+                	
+                	ps.println(colors.BLUE + "Creando un cliente... Esperando NickName" + colors.RESET);
+                	String ID = disCliente.readUTF();
+                	
+                	if (ID == null || ID.trim().isEmpty()) ID = "anon";
+                	
+                	cli newCliente = new cli(sockAux, ID, disCliente, dosCliente);
+                	ps.println(colors.RED + "El cliente " + newCliente.nick + " accedió al servidor.\n" + colors.RESET);
+                	Server.clientesConectados.add(newCliente);
+                	
+                	newCliente.hilo.start();
+                	newCliente.notificarClientes(true);
+                	
+            	} catch (IOException e) {
+                	e.printStackTrace();
+            	}//end try/catch
+        	}//end while
+    	}//end run
+
+    }//end HiloServidor class
+    
 }//Server
