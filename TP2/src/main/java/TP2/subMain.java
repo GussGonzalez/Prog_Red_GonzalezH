@@ -2,15 +2,23 @@ package TP2;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class subMain {
 	PrintStream ps = new PrintStream(System.out);
 	File Inventario = new File("..\\TP2\\Inventario.dat");
 	PrintStream psf;
+	
+	String prodName;
+	Float compra;
+	Float venta;
+	Integer stock;
 	
 	public String leerConsola() {
 		int linea;
@@ -99,21 +107,26 @@ public class subMain {
 	}//crearInventario
 	
 	
-	
-	public void pedirDatos() {		
+	/*
+	 * Se me ocurre que en esta función puedo agregar una variable datos en donde se guarda todo en un mismo 
+	 * renglón en el formato que lo pude y devuelve eso, después cuando el archivo 
+	 * necesite agregar esto simplemente llama la función.
+	*/
+	public void pedirDatos(String prodName, Float compra, Float venta, Integer stock) {		
 		Boolean esDatType = false;
+		String datos;
 		String temporal;
 		
 		ps.println("\n --- --- 「  Por favor ingrese los datos pedidos a continuación.  」 --- --- \n");
 		
 		ps.println(colors.YELLOW + "Nombre del producto: " + colors.RESET);
-		String prodName = leerConsola();
+		prodName = leerConsola();
 		
 		
 		ps.println(colors.YELLOW + "Precio de compra: " + colors.RESET);
 		while ( esDatType == false) {
-			if (  textoEs( temporal = leerConsola() ) == "Float" ) { //si no funciona es porque no está tomando bien el float, hacer un println con textoes(temporal)
-				Float compra = convertNumF(temporal, textoEs(temporal));
+			if (  textoEs( temporal = leerConsola() ) == "Float" ) { //si no funciona es porque no está tomando bien el float, hacer un println con textoes(
+				compra = convertNumF(temporal, textoEs(temporal));
 				esDatType = true;
 			}else{
 				ps.println(colors.RED + "\n Valor no válido, por favor revise que sus datos tengan el formato correcto e intente de nuevo." + colors.RESET);
@@ -125,7 +138,7 @@ public class subMain {
 		ps.println(colors.YELLOW + "Precio de venta: " + colors.RESET);
 		while ( esDatType == false) {
 			if (  textoEs( temporal = leerConsola() ) == "Float" ) {
-				Float venta = convertNumF(temporal, textoEs(temporal));
+				venta = convertNumF(temporal, textoEs(temporal));
 				esDatType = true;
 			}else{
 				ps.println(colors.RED + "\n Valor no válido, por favor revise que sus datos tengan el formato correcto e intente de nuevo." + colors.RESET);
@@ -137,7 +150,7 @@ public class subMain {
 		ps.println(colors.YELLOW + "Stock: " + colors.RESET);
 		while ( esDatType == false) {
 			if (  textoEs( temporal = leerConsola() ) == "Integer" ) {
-				Integer stock = convertNumI(temporal, textoEs(temporal));
+				stock = convertNumI(temporal, textoEs(temporal));
 				esDatType = true;
 			}else{
 				ps.println(colors.RED + "\n Valor no válido, por favor revise que sus datos tengan el formato correcto e intente de nuevo." + colors.RESET);
@@ -152,9 +165,48 @@ public class subMain {
 			crearInventario();
 		}//end if/else
 		
-		psf = new PrintStream(  new FileOutputStream(Inventario)  );
+		psf.println(prodName + ";" + compra + ";" + venta + ";" + stock);
 		psf.flush();
 		psf.close();
 	}//agregarAlInventario
+	
+	//revisar, es literalmente lo que está en el Git de Consor
+	public String leerArchivo(File Inventario) {
+		FileReader fr = null;
+		BufferedReader br = null;
+
+		try {
+			fr = new FileReader(Inventario);
+			br = new BufferedReader(fr);
+
+			String line = "";
+			String texto = "";
+			
+			while ((line = br.readLine()) != null) {		
+				texto = texto.concat(line);
+			}//end while
+			return texto;
+			
+		} catch (FileNotFoundException e) {
+			Logger.getLogger(subMain.class.getName()).log(Level.WARNING, null, e);
+			ps.println(colors.RED + "No se encontró el archivo" + colors.RESET);
+		} catch (IOException e) {
+			Logger.getLogger(subMain.class.getName()).log(Level.WARNING, null, e);
+			ps.println(colors.RED + "Ha ocurrido un error" + colors.RESET);
+		} finally {
+			try {
+				if (fr != null)
+					fr.close();
+				if (br != null)
+					br.close();
+			} catch (IOException e) {
+				Logger.getLogger(subMain.class.getName()).log(Level.WARNING, null, e);
+				ps.println(colors.RED + "Ha ocurrido un error" + colors.RESET);
+			}//end finally try/catch
+		}//end try/catch/finally
+		return null;
+		
+	}//leerArchivo
+	
 	
 }//subMain
