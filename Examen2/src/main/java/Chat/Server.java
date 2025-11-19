@@ -18,6 +18,7 @@ public class Server {
     public static final List<cli> clientesConectados = Collections.synchronizedList(new ArrayList<>());
 
     public Server() {
+    	ps.println(colors.YELLOW + "BIENVENIDO AL SERVIDOR LOCAL" + colors.RESET);
         ps.println("INICIANDO SERVIDOR");
         HiloServidor serv = new HiloServidor();
         serv.setName("SERVIDOR");
@@ -30,7 +31,6 @@ public class Server {
     }
   */
 
-    
     
     class cli implements Runnable {
     	
@@ -135,28 +135,9 @@ public class Server {
                     continue;
                 }//end if
                 
-                
-                if (msgRecibido.equals("/listar")) {
-                    String lista;
-                    
-                    synchronized (Server.clientesConectados) {
-                        lista = Server.clientesConectados.stream()
-                                .map(c -> c.nick)
-                                .collect(Collectors.joining(","));
-                    }//end synchronized
-                    
-                    synchronized (dos) {
-                        dos.writeUTF("RESP::LIST");
-                        dos.writeUTF(lista);
-                        dos.flush();
-                    }//end synchronized
-                    continue;
-                    
-                }//end if
-                
-                
+                      
                 if (msgRecibido.startsWith("/")) {
-                    if (msgRecibido.equals("/salir")) {
+                    if (msgRecibido.equals("/logout")) {
                         this.isConected = false;
                         try { this.dis.close(); } catch (Exception e) {}//end try/catch
                         try { this.dos.close(); } catch (Exception e) {}//end try/catch
@@ -266,8 +247,11 @@ public class Server {
             	try {
                 	ps.println("Esperando conexion con un cliente");
                 	sockAux = server.accept();
-                	ps.println(colors.YELLOW + "BIENVENIDO AL SERVIDOR LOCAL" + colors.RESET);
                 	ps.println(colors.YELLOW + "Cliente conectado: " + sockAux.getInetAddress().getHostAddress() + colors.RESET);
+                	ps.println(colors.YELLOW + "Comandos disponibles:" + colors.RESET);
+                    ps.println("/hi - vuelve a enviar el mensaje de bienvenida");
+                    ps.println("/logout - desconectarse");
+                    ps.println("/verComandos - mostrar comandos");
                 	
                 	disCliente = new DataInputStream(sockAux.getInputStream());
                 	dosCliente = new DataOutputStream(sockAux.getOutputStream());

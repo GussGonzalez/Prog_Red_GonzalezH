@@ -31,7 +31,7 @@ public class Cliente {
     
     public Cliente() {
         try {
-            IP = InetAddress.getByName("130.10.1.54");
+            IP = InetAddress.getByName("130.10.1.54");//127.0.0.1
             sock = new Socket(IP, puerto);
             isConected = true;
             disServidor = new DataInputStream(sock.getInputStream());
