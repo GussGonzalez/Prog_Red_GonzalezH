@@ -4,8 +4,11 @@ import java.net.Socket;
 import java.io.*;
 import java.util.List;
 
-import BatallaNaval.Mensaje;
 import BatallaNaval.Mensaje.Tipo;
+import BatallaNaval.Mensaje;
+
+import Modelo.Barco;
+import Modelo.Tablero;
 import Utils.colors;
 
 public class Cliente {
