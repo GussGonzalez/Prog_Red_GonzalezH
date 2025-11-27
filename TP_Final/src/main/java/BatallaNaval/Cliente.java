@@ -4,18 +4,17 @@ import java.net.Socket;
 import java.io.*;
 import java.util.List;
 
+import BatallaNaval.Mensaje;
+import BatallaNaval.Mensaje.Tipo;
 import Utils.colors;
 
 public class Cliente {
 	//imports
-	Utils.colors Colors;
-	InputStreamReader isr = new InputStreamReader(System.in);
 	PrintStream ps = new PrintStream(System.out);
-	BufferedReader br = new BufferedReader(isr);
 	
 	private Socket socket;
-	private DataOutputStream dosServidor;
-	private DataInputStream disServidor;
+	private ObjectOutputStream oosServidor;
+	private ObjectInputStream oisServidor;
 	
 	private Tablero tableroPropio;
 	private Tablero tableroOponente; 
@@ -37,38 +36,38 @@ public class Cliente {
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				ps.println(Colors.RED + "Error al leer la entrada. Intenta nuevamente.\n" + Colors.RESET);
+				ps.println(colors.RED + "Error al leer la entrada. Intenta nuevamente.\n" + colors.RESET);
 			}//end try/catch
 			
 			return input;
 	}//leerConsola
 	
 	public void iniciar() {
-        System.out.println(Colors.CYAN + "Cliente Batalla Naval");
+        ps.println(colors.CYAN + "Cliente Batalla Naval");
+        ps.print("Ingrese IP del servidor (default: 127.0.0.1). Si se quiere usar la default, simplemente presione enter: " + colors.RESET);
         
-        System.out.print("Ingrese IP del servidor (default: 127.0.0.1). Si se quiere usar la default, simplemente presione enter: " + Colors.RESET);
         String ip = leerConsola();
         if (!ip.isEmpty()) this.serverIp = ip;
         
         try {
             socket = new Socket(serverIp, port);
-            System.out.println(Colors.YELLOW + "Conectado al servidor. Esperando compañero..." + Colors.RESET);
+            ps.println(colors.YELLOW + "Conectado al servidor. Esperando compañero..." + colors.RESET);
 
-            dosServidor = new DataOutputStream(socket.getOutputStream());
-            disServidor = new DataInputStream(socket.getInputStream());
+            oosServidor = new ObjectOutputStream(socket.getOutputStream());
+            oisServidor = new ObjectInputStream(socket.getInputStream());
             tableroPropio = new Tablero();
             tableroOponente = new Tablero(); 
 
             posicionarBarcos();
 
-            dosServidor.writeUTF(new Mensaje(Mensaje.Tipo.POSICIONAMIENTO_OK, "Tablero listo", tableroPropio));
-            dosServidor.flush();
-            System.out.println("Barcos posicionados. Esperando inicio de partida...");
+            oosServidor.writeObject(new Mensaje(Tipo.POSICIONAMIENTO_OK, "Tablero listo", tableroPropio));
+            oosServidor.flush();
+            ps.println(colors.GREEN + "Barcos posicionados. Esperando inicio de partida..." + colors.RESET);
 
             buclePrincipalJuego();
 
         } catch (IOException e) {
-            System.err.println(Colors.RED + "❌ Error de conexión o I/O: " + e.getMessage() + Colors.RESET);
+            System.err.println(colors.RED + "Error de conexión o I/O: " + e.getMessage() + colors.RESET);
         } finally {
             cerrarRecursos();
         }//end try/catch/finally
@@ -80,17 +79,17 @@ public class Cliente {
             barcosRestantes = tableroPropio.getBarcosNoColocados();
             if (barcosRestantes.isEmpty()) break;
             
-            ps.println(Colors.CYAN + "\n--- Posicionamiento de Barcos ---" + Colors.RESET);
+            ps.println(colors.CYAN + "\n--- Posicionamiento de Barcos ---" + colors.RESET);
             tableroPropio.mostrarTablero(false);
-            ps.println(Colors.CYAN + "\nBarcos pendientes:" + Colors.RESET);
+            ps.println(colors.CYAN + "\nBarcos pendientes:" + colors.RESET);
             
             for (int i = 0; i < barcosRestantes.size(); i++) {
                 Barco b = barcosRestantes.get(i);
-                ps.printf("  %d) %s (Longitud: %d)\n", i + 1, b.getNombre(), b.getLongitud());
+                ps.printf(colors.CYAN + "  %d) %s (Longitud: %d)\n", i + 1, b.getNombre(), b.getLongitud() + colors.RESET);
             }//end for
 
             try {
-                ps.print("\nSelecciona un barco (ej. Portaaviones): ");
+                ps.print(colors.YELLOW + "\nSelecciona un barco (ej. Portaaviones): " + colors.RESET);
                 String nombreBarco = leerConsola().trim();
                 
                 Barco barcoSel = barcosRestantes.stream()
@@ -98,24 +97,24 @@ public class Cliente {
                     .findFirst().orElse(null);
 
                 if (barcoSel == null) {
-                    System.out.println("Barco no válido o ya colocado.");
+                    ps.println(colors.RED + "Barco no válido o ya colocado." + colors.RESET);
                     continue;
                 }//end if
                 
-                System.out.print("Fila inicial (0-9): ");
+                ps.print("Fila inicial (0-9): ");
                 int fila = Integer.parseInt(leerConsola().trim());
-                System.out.print("Columna inicial (0-9): ");
+                ps.print("Columna inicial (0-9): ");
                 int col = Integer.parseInt(leerConsola().trim());
-                System.out.print("Orientación (H/V): ");
+                ps.print("Orientación (H/V): ");
                 boolean horizontal = leerConsola().trim().toUpperCase().startsWith("H");
 
                 if (!tableroPropio.colocarBarco(barcoSel.getNombre(), fila, col, horizontal)) {
-                    System.out.println(Colors.RED + "ERROR: No se puede colocar aquí (límites o colisión). Intenta de nuevo." + Colors.RESET);
+                    ps.println(colors.RED + "ERROR: No se puede colocar aquí (límites o colisión). Intenta de nuevo." + colors.RESET);
                 } else {
-                    System.out.println(Colors.GREEN + "¡Barco colocado!" + Colors.RESET);
+                    ps.println(colors.GREEN + "¡Barco colocado!" + colors.RESET);
                 }//end if/else
             } catch (NumberFormatException e) {
-                System.out.println(Colors.RED + "Entrada inválida. Usa números para coordenadas." + Colors.RESET);
+                ps.println(colors.RED + "Entrada inválida. Usa números para coordenadas." + colors.RESET);
             }//end try/catch
         } while (barcosRestantes.size() > 0);
     }//end posicionarBarcos
@@ -125,11 +124,11 @@ public class Cliente {
         
         while (partidaEnCurso) {
             try {
-                Mensaje mensaje = (Mensaje) disServidor.readObject();
+                Mensaje mensaje = (Mensaje) oisServidor.readObject();
                 
                 switch (mensaje.getTipo()) {
                     case EMPEZAR_PARTIDA:
-                        System.out.println("\n*** " + mensaje.getDatos() + " ***");
+                        ps.println("\n*** " + mensaje.getDatos() + " ***");
                         mostrarAmbosTableros();
                         if (mensaje.getDatos().contains("primero")) {
                             pedirDisparo();
@@ -137,7 +136,7 @@ public class Cliente {
                         break;
                         
                     case ACTUALIZAR_ESTADO:
-                        System.out.println("\n*** NOTIFICACION: " + mensaje.getDatos() + " ***");
+                        ps.println("\n*** NOTIFICACION: " + mensaje.getDatos() + " ***");
                         if (mensaje.getDatos().contains("tu turno") || mensaje.getDatos().contains("Dispara de nuevo")) {
                             mostrarAmbosTableros();
                             pedirDisparo();
@@ -145,7 +144,7 @@ public class Cliente {
                         break;
                         
                     case RESULTADO_DISPARO:
-                        System.out.println("--- Tu Disparo: " + mensaje.getDatos() + " ---");
+                        ps.println(colors.GREEN + "--- Tu Disparo: " + mensaje.getDatos() + " ---" + colors.RESET);
                         break;
                         
                     case ENVIO_TABLERO_OPONENTE:
@@ -154,22 +153,22 @@ public class Cliente {
                         break;
                         
                     case FIN_PARTIDA:
-                        System.out.println("\n" + """
+                        ps.println(colors.CYAN + "\n" + """
                             ---------------------------
-                                🏁 FIN DE PARTIDA 🏁
+                                 FIN DE PARTIDA 
                             ---------------------------
-                            """ + mensaje.getDatos());
+                            """ + mensaje.getDatos() + colors.RESET);
                         partidaEnCurso = false;
                         break;
                     default:
-                        System.out.println("Mensaje de servidor desconocido.");
+                        ps.println("Mensaje de servidor desconocido.");
                 }//end switch/case
 
             } catch (EOFException e) {
                 System.out.println("Servidor cerró la conexión. Fin de partida.");
                 partidaEnCurso = false;
             } catch (ClassNotFoundException | IOException e) {
-                System.err.println("❌ Error de comunicación con el servidor: " + e.getMessage());
+                System.err.println("Error de comunicación con el servidor: " + e.getMessage());
                 partidaEnCurso = false;
             }//end try/catch
         }//end while partida
@@ -180,19 +179,19 @@ public class Cliente {
         try {
             String entrada = leerConsola().trim();
             if (!entrada.matches("\\d+,\\s*\\d+")) {
-                 ps.println(Colors.RED + "Formato de coordenadas inválido. Intenta de nuevo." + Colors.RESET);
+                 ps.println(colors.RED + "Formato de coordenadas inválido. Intenta de nuevo." + colors.RESET);
                  pedirDisparo(); 
                  return;
             }//end if
-            dosServidor.writeObject(new Mensaje(Mensaje.Tipo.TURNO_DISPARO, entrada));
-            dosServidor.flush();
+            oosServidor.writeObject(new Mensaje(Mensaje.Tipo.TURNO_DISPARO, entrada));
+            oosServidor.flush();
         } catch (IOException e) {
             System.err.println("Error enviando disparo: " + e.getMessage());
         }//end try/catch
     }//end pedirDisparo
     
     private void mostrarAmbosTableros() {
-        ps.println("\n" + """
+        ps.println( "\n" + """
             ==================================
                   TU TABLERO (PROPIO)
             ==================================
@@ -206,13 +205,13 @@ public class Cliente {
             ==================================
             """);
         tableroOponente.mostrarTablero(true); 
-        ps.println("==================================");
+        ps.println("==================================" + colors.RESET);
     }//end mostrarAmbosTableros
 
     private void cerrarRecursos() {
         try {
-            if (dosServidor != null) dosServidor.close();
-            if (disServidor != null) disServidor.close();
+            if (oosServidor != null) oosServidor.close();
+            if (oisServidor != null) oisServidor.close();
             if (socket != null && !socket.isClosed()) socket.close();
         } catch (IOException e) { /* Ignorar */ }
     }//end cerrarRecursos

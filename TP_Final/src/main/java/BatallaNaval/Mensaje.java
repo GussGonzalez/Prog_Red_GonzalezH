@@ -24,13 +24,13 @@ public class Mensaje implements Serializable {
         this.tipo = tipo;
         this.datos = datos;
         this.objeto = objeto;
-    }
+    }//end Mensaje
     
     public Mensaje(Tipo tipo, String datos) {
         this(tipo, datos, null);
-    }
+    }//end Mensaje
 
     public Tipo getTipo() { return tipo; }
     public String getDatos() { return datos; }
     public Object getObjeto() { return objeto; }
-}
+}//Mensaje
