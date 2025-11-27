@@ -12,10 +12,16 @@ public class Server {
 	PrintStream ps = new PrintStream(System.out);
 
     private static final int PUERTO = 666;
+    
+    /*
     private final ConcurrentLinkedQueue<Socket> salaDeEspera = new ConcurrentLinkedQueue<>();
     private int contadorPartidas = 0;
     
     private final ExecutorService pool = Executors.newCachedThreadPool(); 
+    
+    //El problema es esto. Hay que replantear el sistema con el servidor y 
+    //hacerlo con hilos personalizados, nuestro propio server thread handler
+    */
 
     public void iniciar() {
         try (ServerSocket serverSocket = new ServerSocket(PUERTO)) {

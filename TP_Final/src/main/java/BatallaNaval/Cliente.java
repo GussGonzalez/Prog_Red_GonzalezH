@@ -62,14 +62,16 @@ public class Cliente {
             tableroOponente = new Tablero(); 
 
             posicionarBarcos();
-
-            oosServidor.writeObject(new Mensaje(Tipo.POSICIONAMIENTO_OK, "Tablero listo", tableroPropio));
+            
+            oosServidor.writeUTF("Tablero listo");
+            oosServidor.writeObject(new Mensaje(Tipo.POSICIONAMIENTO_OK, "Tablero listo", tableroPropio));//es aca el error
             oosServidor.flush();
             ps.println(colors.GREEN + "Barcos posicionados. Esperando inicio de partida..." + colors.RESET);
 
             buclePrincipalJuego();
 
         } catch (IOException e) {
+        	System.err.println( e );
             System.err.println(colors.RED + "Error de conexión o I/O: " + e.getMessage() + colors.RESET);
         } finally {
             cerrarRecursos();
@@ -87,7 +89,7 @@ public class Cliente {
             ps.println("\nBarcos pendientes:");
             for (int i = 0; i < barcosRestantes.size(); i++) {
                 Barco b = barcosRestantes.get(i);
-                ps.printf(colors.CYAN,  "  %d) %s (Longitud: %d)\n", i + 1, b.getNombre(), b.getLongitud(), colors.RESET);
+                ps.printf("  %d) %s (Longitud: %d)\n", i + 1, b.getNombre(), b.getLongitud());
             }//end for
 
             try {
@@ -167,7 +169,7 @@ public class Cliente {
                 }//end switch/case
 
             } catch (EOFException e) {
-                System.out.println("Servidor cerró la conexión. Fin de partida.");
+                ps.println("Servidor cerró la conexión. Fin de partida.");
                 partidaEnCurso = false;
             } catch (ClassNotFoundException | IOException e) {
                 System.err.println("Error de comunicación con el servidor: " + e.getMessage());

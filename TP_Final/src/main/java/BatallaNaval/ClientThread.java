@@ -63,8 +63,9 @@ public class ClientThread implements Runnable {
             recibirPosicionamiento();
             tableroListo.release(); 
             while (!socket.isClosed()) {
+            	System.out.println("while");
                 Mensaje mensaje = (Mensaje) oisServidor.readObject();
-                
+                System.out.println("mesnje:"+mensaje);
                 if (mensaje.getTipo() == Mensaje.Tipo.TURNO_DISPARO) {
                     manejarDisparo(mensaje.getDatos());
                 }//end if
@@ -80,6 +81,7 @@ public class ClientThread implements Runnable {
     
     private void recibirPosicionamiento() throws ClassNotFoundException, IOException {
         Mensaje posMsg = (Mensaje) oisServidor.readObject();
+        System.out.println( "posMSG:" + posMsg);
         if (posMsg.getTipo() == Mensaje.Tipo.POSICIONAMIENTO_OK) {
             this.tableroPropio = (Tablero) posMsg.getObjeto();
         } else {
