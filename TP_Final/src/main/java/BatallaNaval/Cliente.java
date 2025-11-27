@@ -84,11 +84,10 @@ public class Cliente {
             
             ps.println(colors.CYAN + "\n--- Posicionamiento de Barcos ---" + colors.RESET);
             tableroPropio.mostrarTablero(false);
-            ps.println(colors.CYAN + "\nBarcos pendientes:" + colors.RESET);
-            
+            ps.println("\nBarcos pendientes:");
             for (int i = 0; i < barcosRestantes.size(); i++) {
                 Barco b = barcosRestantes.get(i);
-                ps.printf(colors.CYAN + "  %d) %s (Longitud: %d)\n", i + 1, b.getNombre(), b.getLongitud() + colors.RESET);
+                ps.printf(colors.CYAN,  "  %d) %s (Longitud: %d)\n", i + 1, b.getNombre(), b.getLongitud(), colors.RESET);
             }//end for
 
             try {

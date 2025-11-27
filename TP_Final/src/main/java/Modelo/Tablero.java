@@ -116,7 +116,7 @@ public class Tablero implements Serializable {
         ps.println();
         
         for (int i = 0; i < TAMANIO; i++) {
-            System.out.printf("%2d", i);
+            ps.printf("%2d", i);
             for (int j = 0; j < TAMANIO; j++) {
                 char simbolo = getSimboloCelda(tablero.get(i).get(j), ocultarBarcos);
                 ps.print(" " + simbolo);
