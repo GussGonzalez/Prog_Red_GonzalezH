@@ -1,22 +1,14 @@
 package TP2;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 
 public class main {
-	String nombreProd;
-	Float precioCompra;
-	Float precioVenta;
-	Integer stock;
-
 	public static void main(String[] args) {
 		//imports
-				InputStreamReader isr = new InputStreamReader(System.in);
 				PrintStream ps = new PrintStream(System.out);
-				BufferedReader br = new BufferedReader(isr);				
-				
+				subMain sm = new subMain();
+		//main loop
 				while (true) {
 					int opcion = -1; //lo que elige el usuario del menu
 		            int linea;
@@ -36,14 +28,11 @@ public class main {
 							
 							switch (opcion) {
 			                case 1:
-								//
+			                	sm.agregarAlInventario();
 			                    break;
 			                case 2:
-								//eraseData();
+								sm.leerArchivo(sm.Inventario);
 			                    break;
-			                case 3:
-			                	//showData();
-			                	break;
 			                case 0:
 			                    System.out.println(colors.GREEN + "¡Hasta luego!" + colors.RESET);
 			                    return;

@@ -60,13 +60,11 @@ public class subMain {
 	                Float.parseFloat(txt.replace(',', '.'));
 	                answer = "Float";
 	                
-				} catch (NumberFormatException e2) { 
-					ps.println(colors.RED + "Input no válido \n" + colors.RESET);
-					answer = "null";
-				}//end try/catch
+				} catch (NumberFormatException e2) { }//end try/catch
 			}//end try/catch
 		}//end if/else
 		
+		ps.println(answer);
 		return answer;
 	}//esNumero
 	
@@ -74,7 +72,7 @@ public class subMain {
 	
 	public int convertNumI(String txt, String txtEs) {
 		if (txt != null || txtEs == "Integer") {
-				return Integer.parseInt(txt);
+			return Integer.parseInt(txt);
 		}else{
 			ps.println(colors.RED + "Entrada de datos incorrecta o no válida. No se puede convertir en un número\n" + colors.RESET);
 			return 0;
@@ -107,12 +105,8 @@ public class subMain {
 	}//crearInventario
 	
 	
-	/*
-	 * Se me ocurre que en esta función puedo agregar una variable datos en donde se guarda todo en un mismo 
-	 * renglón en el formato que lo pude y devuelve eso, después cuando el archivo 
-	 * necesite agregar esto simplemente llama la función.
-	*/
-	public void pedirDatos(String prodName, Float compra, Float venta, Integer stock) {		
+	
+	public String pedirDatos() {
 		Boolean esDatType = false;
 		String datos;
 		String temporal;
@@ -121,12 +115,14 @@ public class subMain {
 		
 		ps.println(colors.YELLOW + "Nombre del producto: " + colors.RESET);
 		prodName = leerConsola();
+		datos = prodName + ";";
 		
 		
-		ps.println(colors.YELLOW + "Precio de compra: " + colors.RESET);
+		ps.println(colors.YELLOW + "Precio de compra (por favor ingresar un numero con , o .): " + colors.RESET);
 		while ( esDatType == false) {
 			if (  textoEs( temporal = leerConsola() ) == "Float" ) { //si no funciona es porque no está tomando bien el float, hacer un println con textoes(
 				compra = convertNumF(temporal, textoEs(temporal));
+				datos += compra + ";";
 				esDatType = true;
 			}else{
 				ps.println(colors.RED + "\n Valor no válido, por favor revise que sus datos tengan el formato correcto e intente de nuevo." + colors.RESET);
@@ -135,10 +131,11 @@ public class subMain {
 		esDatType = false;
 		
 		
-		ps.println(colors.YELLOW + "Precio de venta: " + colors.RESET);
+		ps.println(colors.YELLOW + "Precio de venta (por favor ingresar un numero con , o .): " + colors.RESET);
 		while ( esDatType == false) {
 			if (  textoEs( temporal = leerConsola() ) == "Float" ) {
 				venta = convertNumF(temporal, textoEs(temporal));
+				datos += venta + ";";
 				esDatType = true;
 			}else{
 				ps.println(colors.RED + "\n Valor no válido, por favor revise que sus datos tengan el formato correcto e intente de nuevo." + colors.RESET);
@@ -151,32 +148,36 @@ public class subMain {
 		while ( esDatType == false) {
 			if (  textoEs( temporal = leerConsola() ) == "Integer" ) {
 				stock = convertNumI(temporal, textoEs(temporal));
+				datos += stock;
 				esDatType = true;
 			}else{
 				ps.println(colors.RED + "\n Valor no válido, por favor revise que sus datos tengan el formato correcto e intente de nuevo." + colors.RESET);
 			}//end if/else
 		}//end while
+		
+		return datos;
 	}//pedirDatos
 	
 	
 	
-	public void agregarAlInventario(String prodName, Float compra, Float venta, Integer stock) {
-		if ( !Inventario.exists() ) {
-			crearInventario();
+	public void agregarAlInventario() {
+		if ( !Inventario.exists() ) { 
+			crearInventario(); 
+			psf.println( pedirDatos() );
+			psf.flush();
+			psf.close();
+		}else{
+			
 		}//end if/else
-		
-		psf.println(prodName + ";" + compra + ";" + venta + ";" + stock);
-		psf.flush();
-		psf.close();
 	}//agregarAlInventario
 	
 	//revisar, es literalmente lo que está en el Git de Consor
-	public String leerArchivo(File Inventario) {
+	public String leerArchivo(File file) {
 		FileReader fr = null;
 		BufferedReader br = null;
 
 		try {
-			fr = new FileReader(Inventario);
+			fr = new FileReader(file);
 			br = new BufferedReader(fr);
 
 			String line = "";
