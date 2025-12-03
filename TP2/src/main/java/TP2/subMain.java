@@ -3,10 +3,14 @@ package TP2;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,6 +18,7 @@ public class subMain {
 	PrintStream ps = new PrintStream(System.out);
 	File Inventario = new File("..\\TP2\\Inventario.dat");
 	PrintStream psf;
+	PrintStream psfb;
 	
 	String prodName;
 	Float compra;
@@ -91,14 +96,14 @@ public class subMain {
 	
 	
 	
-	public void crearInventario() {
-		if ( !Inventario.exists() ) {
+	public void crearInventario(File Archivo) {
+		if ( !Archivo.exists() ) {
 			try {
-				psf = new PrintStream(  new FileOutputStream(Inventario)  );
+				psf = new PrintStream(  new FileOutputStream(Archivo)  );
 				psf.flush();
 				psf.close();
 			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+				Logger.getLogger(subMain.class.getName()).log(Level.WARNING, null, e);
 				ps.println(colors.RED + "\n No se pudo crear el archivo, por favor intente de nuevo. \n" + colors.RESET);
 			}//end try/catch
 		}//end if/else
@@ -161,53 +166,120 @@ public class subMain {
 	
 	
 	public void agregarAlInventario() {
-		if ( !Inventario.exists() ) { 
-			crearInventario(); 
-			psf.println( pedirDatos() );
-			psf.flush();
-			psf.close();
-		}else{
+		crearInventario(Inventario);
+			File backupI = new File("..\\TP2\\backup.dat");
+			crearInventario(backupI);
+			List<String> data = leerArchivo(Inventario);
 			
-		}//end if/else
+			for( int i=0 ; i<=data.size() ; i++ ){	
+				psfb.println( data.get(i) );
+			}
+			psfb.println( pedirDatos() );
+			psfb.close();
+			
+			Inventario.delete();
+			crearInventario(Inventario);
+			data = leerArchivo(backupI);
+			for( int i=0 ; i<=data.size() ; i++ ){	
+				psf.println( data.get(i) );
+			}
+			psf.close();
+			
+
 	}//agregarAlInventario
 	
-	//revisar, es literalmente lo que está en el Git de Consor
-	public String leerArchivo(File file) {
-		FileReader fr = null;
-		BufferedReader br = null;
-
-		try {
-			fr = new FileReader(file);
-			br = new BufferedReader(fr);
-
-			String line = "";
-			String texto = "";
-			
-			while ((line = br.readLine()) != null) {		
-				texto = texto.concat(line);
+	public List<String> leerArchivo(File file) {
+		
+		List<String> textoCompleto = new LinkedList<>();
+		
+		//Leer archivo y volcar los datos en memoria VOLATIL (un array)
+		try(BufferedReader brf = new BufferedReader(new FileReader(file)))
+		{
+			String lineas = ""; String EOF = null;
+			while( (lineas = brf.readLine()) != EOF )
+			{
+				//puede tener logica para filtrar qué entra al Array o no
+				ps.println(lineas);
+				textoCompleto.add(lineas);
 			}//end while
-			return texto;
 			
-		} catch (FileNotFoundException e) {
-			Logger.getLogger(subMain.class.getName()).log(Level.WARNING, null, e);
-			ps.println(colors.RED + "No se encontró el archivo" + colors.RESET);
+			return textoCompleto;
+			
 		} catch (IOException e) {
+			ps.println(colors.RED + "El archivo no fue encontrado, no existe o está vacío" + colors.RESET);
 			Logger.getLogger(subMain.class.getName()).log(Level.WARNING, null, e);
-			ps.println(colors.RED + "Ha ocurrido un error" + colors.RESET);
-		} finally {
-			try {
-				if (fr != null)
-					fr.close();
-				if (br != null)
-					br.close();
-			} catch (IOException e) {
-				Logger.getLogger(subMain.class.getName()).log(Level.WARNING, null, e);
-				ps.println(colors.RED + "Ha ocurrido un error" + colors.RESET);
-			}//end finally try/catch
 		}//end try/catch/finally
 		return null;
 		
 	}//leerArchivo
+	
+	
+	/* archivo es Inventario
+	 * producto es el producto a editar o eliminar
+	 * eliminar si es true, editar si es false
+	 */
+	public void editarArchivo(File archivo, String producto, Boolean eliminar) {
+		File backupI = new File("..\\TP2\\backup.dat");
+		crearInventario(backupI);
+		List<String> data = leerArchivo(Inventario);
+		
+		for( int i=0 ; i<=data.size() ; i++ ){	
+			psfb.println( data.get(i) );
+		}
+		psfb.println( pedirDatos() );
+		psfb.close();
+		
+		data = leerArchivo(backupI);
+		for( int i=0 ; i<=data.size() ; i++ ){	
+			psf.println( data.get(i) );
+		}
+		psf.close();
+		
+		
+		if (!eliminar) {
+			//editar producto
+		}else {
+			//eliminar producto
+		}//end if/else
+		
+	}//editarArchivo
+	
+	public void modificarArchivoTemporalLinea(File archivoOriginal, String buscar, String reemplazar)  {
+		File archTemp = new File( archivoOriginal.getAbsolutePath() + ".tmp" );
+		
+		try (
+			BufferedReader br = new BufferedReader( new FileReader(archivoOriginal) );
+			BufferedWriter bw = new BufferedWriter( new FileWriter(archTemp) );
+			)
+		{
+			if (buscar == null || buscar == "" || reemplazar == null || reemplazar == "") {
+				
+				
+			}else if() {
+			
+				String linea = ""; String EOF = null;
+				while( (linea = br.readLine()) != EOF )
+				{
+					//la edicion necesaria
+					if( linea.contains(buscar) )
+					{
+						linea = linea.replace(buscar, reemplazar);
+					}//end if
+				
+					bw.write(linea);
+					bw.newLine();
+				}//end while
+			
+			}//end if/else if/else
+		if( !archivoOriginal.delete() )
+			throw new IOException("No se pudo borrar el archivo original");  
+			
+		if( !archTemp.renameTo(archivoOriginal) )
+			throw new IOException("No se pudo renombrar el archivo temporal.");
+		}catch (Exception e) {
+			Logger.getLogger(subMain.class.getName()).log(Level.WARNING, null, e);
+		}//end try/catch/throws
+	}//end modificarArchivoTemporalLinea
 	
 	
 }//subMain

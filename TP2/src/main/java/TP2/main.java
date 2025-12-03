@@ -33,6 +33,12 @@ public class main {
 			                case 2:
 								sm.leerArchivo(sm.Inventario);
 			                    break;
+			                case 3:
+								//eliminar
+			                    break;
+			                case 4:
+								//editar
+			                    break;
 			                case 0:
 			                    System.out.println(colors.GREEN + "¡Hasta luego!" + colors.RESET);
 			                    return;
@@ -66,7 +72,9 @@ public class main {
 		        ps.println("\n --- --- 「 ✦ Menu ✦ 」 --- --- ");
 				
 				ps.println(colors.YELLOW + "   1.  	(Agregar producto)");
-		        ps.println("   2.  	(Mostrar producto)");
+		        ps.println("   2.  	(Mostrar productos)");
+		        ps.println("   3.  	(Eliminar producto)");
+		        ps.println("   4.  	(Editar producto)");  
 		        ps.println("   0.  	(Salir)" + colors.RESET);
 		        ps.print("¡ Ingresa el número del ejercicio que desee ejecutar ! : ");
 		    }//end mostrarMenuPrincipal
