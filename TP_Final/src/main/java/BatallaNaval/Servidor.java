@@ -161,8 +161,7 @@ class HiloServidor extends Thread {
 				ps.println("Esperando conexión con un cliente");
 				sockAux = server.accept();
 
-				ps.println(colors.GREEN + "Cliente conectado: " + sockAux.getInetAddress().getHostAddress()
-						+ colors.RESET);
+				ps.println(colors.GREEN + "Cliente conectado: " + sockAux.getInetAddress().getHostAddress() + colors.RESET);
 
 				disCliente = new DataInputStream(sockAux.getInputStream());
 				dosCliente = new DataOutputStream(sockAux.getOutputStream());
@@ -173,8 +172,7 @@ class HiloServidor extends Thread {
 
 				cli newCliente = new cli(sockAux, ID, disCliente, dosCliente);
 
-				ps.println(
-						colors.GREEN + "El cliente " + newCliente.nick + " accedió al servidor.\n" + colors.RESET);
+				ps.println(colors.GREEN + "El cliente " + newCliente.nick + " accedió al servidor.\n" + colors.RESET);
 
 				Servidor.clientesConectados.add(newCliente);
 				newCliente.hilo.start();

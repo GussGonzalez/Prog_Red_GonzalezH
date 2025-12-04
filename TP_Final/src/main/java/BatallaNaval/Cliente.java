@@ -75,12 +75,24 @@ public class Cliente {
         	IP = InetAddress.getByName("127.0.0.1");
 			sock = new Socket(IP, puerto);
 			
+			isConected = true;
+			sendNickname = true;
+			
             ps.println(colors.YELLOW + "Conectado al servidor. Esperando compañero..." + colors.RESET);
 
             oosServidor = new ObjectOutputStream(sock.getOutputStream());
             oisServidor = new ObjectInputStream(sock.getInputStream());
             tableroPropio = new Tablero();
             tableroOponente = new Tablero(); 
+            
+            if (sock.isConnected() && sendNickname) {
+				ps.println("Ingrese su nombre de usuario:");
+				String ID = leerConsola();
+				dosServidor.writeUTF(ID);
+				sendNickname = false;
+
+				ps.println("Bienvenido al chat " + ID);
+			}
 
             posicionarBarcos();
             
@@ -101,8 +113,8 @@ public class Cliente {
     }//end iniciar
 	
     private void posicionarBarcos() {
-        List<Barco> barcosRestantes;
-        do {
+        List<Barco> barcosRestantes = tableroPropio.getBarcosNoColocados();;
+        while (barcosRestantes.size() > 0){
             barcosRestantes = tableroPropio.getBarcosNoColocados();
             if (barcosRestantes.isEmpty()) break;
             
@@ -142,7 +154,7 @@ public class Cliente {
             } catch (NumberFormatException e) {
                 ps.println(colors.RED + "Entrada inválida. Usa números para coordenadas." + colors.RESET);
             }//end try/catch
-        } while (barcosRestantes.size() > 0);
+        }//end while
     }//end posicionarBarcos
     
     private void buclePrincipalJuego() {
@@ -193,9 +205,13 @@ public class Cliente {
             } catch (EOFException e) {
                 ps.println("Servidor cerró la conexión. Fin de partida.");
                 partidaEnCurso = false;
+                
+                Logger.getLogger(Cliente.class.getName()).log(Level.WARNING, null, e);
+                
             } catch (ClassNotFoundException | IOException e) {
                 System.err.println("Error de comunicación con el servidor: " + e.getMessage());
                 partidaEnCurso = false;
+                Logger.getLogger(Cliente.class.getName()).log(Level.WARNING, null, e);
             }//end try/catch
         }//end while partida
     }//end buclePrincipalJuego
@@ -213,6 +229,7 @@ public class Cliente {
             oosServidor.flush();
         } catch (IOException e) {
             System.err.println("Error enviando disparo: " + e.getMessage());
+            Logger.getLogger(Cliente.class.getName()).log(Level.WARNING, null, e);
         }//end try/catch
     }//end pedirDisparo
     
@@ -239,7 +256,9 @@ public class Cliente {
             if (oosServidor != null) oosServidor.close();
             if (oisServidor != null) oisServidor.close();
             if (sock != null && !sock.isClosed()) sock.close();
-        } catch (IOException e) { /* Ignorar */ }
+        } catch (IOException e) { 
+        	Logger.getLogger(Cliente.class.getName()).log(Level.WARNING, null, e);
+        }//end try/catch
     }//end cerrarRecursos
 
 }//Cliente
