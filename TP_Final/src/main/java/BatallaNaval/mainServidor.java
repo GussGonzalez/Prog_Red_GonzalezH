@@ -1,9 +1,9 @@
 package BatallaNaval;
 
-public class mainServer {
+public class mainServidor {
 
 	public static void main(String[] args) {
-		new Server().iniciar();
+		Servidor BatallaNavalServer = new Servidor();
 	}//end main
 }//mainServer
 

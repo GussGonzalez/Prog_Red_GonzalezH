@@ -1,11 +1,22 @@
 package BatallaNaval;
 
-import java.net.Socket;
 import java.io.*;
 import java.util.List;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import BatallaNaval.Mensaje.Tipo;
-import BatallaNaval.Mensaje;
 
 import Modelo.Barco;
 import Modelo.Tablero;
@@ -14,16 +25,28 @@ import Utils.colors;
 public class Cliente {
 	//imports
 	PrintStream ps = new PrintStream(System.out);
+
+	DataInputStream disServidor = null;
+	DataOutputStream dosServidor = null;
+
+	InputStreamReader is = new InputStreamReader(System.in);
+	BufferedReader buff = new BufferedReader(is);
+
+	InetAddress IP = null;
+	InetAddress serverIP = null;
+	int puerto = 7777;
+	Socket sock = null;
+	boolean isConected = false;
+
+	boolean sendNickname = false;
 	
-	private Socket socket;
+	
 	private ObjectOutputStream oosServidor;
 	private ObjectInputStream oisServidor;
 	
 	private Tablero tableroPropio;
 	private Tablero tableroOponente; 
 	    
-	private String serverIp = "127.0.0.1";
-	private int port = 666;
 	
 	public String leerConsola() {
 		int linea;
@@ -47,17 +70,15 @@ public class Cliente {
 	
 	public void iniciar() {
         ps.println(colors.CYAN + "Cliente Batalla Naval");
-        ps.print("Ingrese IP del servidor (default: 127.0.0.1). Si se quiere usar la default, simplemente presione enter: " + colors.RESET);
-        
-        String ip = leerConsola();
-        if (!ip.isEmpty()) this.serverIp = ip;
         
         try {
-            socket = new Socket(serverIp, port);
+        	IP = InetAddress.getByName("127.0.0.1");
+			sock = new Socket(IP, puerto);
+			
             ps.println(colors.YELLOW + "Conectado al servidor. Esperando compañero..." + colors.RESET);
 
-            oosServidor = new ObjectOutputStream(socket.getOutputStream());
-            oisServidor = new ObjectInputStream(socket.getInputStream());
+            oosServidor = new ObjectOutputStream(sock.getOutputStream());
+            oisServidor = new ObjectInputStream(sock.getInputStream());
             tableroPropio = new Tablero();
             tableroOponente = new Tablero(); 
 
@@ -70,12 +91,13 @@ public class Cliente {
 
             buclePrincipalJuego();
 
-        } catch (IOException e) {
-        	System.err.println( e );
-            System.err.println(colors.RED + "Error de conexión o I/O: " + e.getMessage() + colors.RESET);
+        } catch (UnknownHostException e) {
+			Logger.getLogger(Cliente.class.getName()).log(Level.WARNING, null, e);
+		} catch (IOException e) {
+			Logger.getLogger(Cliente.class.getName()).log(Level.WARNING, null, e);
         } finally {
             cerrarRecursos();
-        }//end try/catch/finally
+        }//end try/catch/catch/finally
     }//end iniciar
 	
     private void posicionarBarcos() {
@@ -216,7 +238,7 @@ public class Cliente {
         try {
             if (oosServidor != null) oosServidor.close();
             if (oisServidor != null) oisServidor.close();
-            if (socket != null && !socket.isClosed()) socket.close();
+            if (sock != null && !sock.isClosed()) sock.close();
         } catch (IOException e) { /* Ignorar */ }
     }//end cerrarRecursos
 

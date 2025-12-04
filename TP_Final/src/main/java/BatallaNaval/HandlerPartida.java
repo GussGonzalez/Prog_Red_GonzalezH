@@ -14,10 +14,10 @@ public class HandlerPartida implements Runnable {
     
     private volatile boolean partidaActiva = true; 
 
-    public HandlerPartida(Socket s1, Socket s2, String nombre) {
+    public HandlerPartida(cli p1, cli p2, String nombre) {
         this.nombrePartida = nombre;
-        this.jugador1 = new ClientThread(s1, "Jugador 1");
-        this.jugador2 = new ClientThread(s2, "Jugador 2");
+        this.jugador1 = new ClientThread(p1.sock, p1.nick);
+        this.jugador2 = new ClientThread(p2.sock, p2.nick);
         this.turnoJugador1 = new AtomicBoolean(true); 
     }// end HandlerPartida
 
