@@ -80,11 +80,16 @@ public class Cliente {
 			
             ps.println(colors.YELLOW + "Conectado al servidor. Esperando compañero..." + colors.RESET);
 
-            oosServidor = new ObjectOutputStream(sock.getOutputStream());
-            oisServidor = new ObjectInputStream(sock.getInputStream());
+            //oosServidor = new ObjectOutputStream(sock.getOutputStream());
+
+            //ps.println( "H" );
+            //oisServidor = new ObjectInputStream(sock.getInputStream());
+            dosServidor = new DataOutputStream( sock.getOutputStream() );
+           // ps.println( "O" );
             tableroPropio = new Tablero();
             tableroOponente = new Tablero(); 
             
+            ps.println( "Hola" );
             if (sock.isConnected() && sendNickname) {
 				ps.println("Ingrese su nombre de usuario:");
 				String ID = leerConsola();

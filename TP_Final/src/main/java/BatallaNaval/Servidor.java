@@ -175,7 +175,6 @@ class HiloServidor extends Thread {
 				ps.println(colors.GREEN + "El cliente " + newCliente.nick + " accedió al servidor.\n" + colors.RESET);
 
 				Servidor.clientesConectados.add(newCliente);
-				newCliente.hilo.start();
 				
 				if (Servidor.clientesConectados.size() >= 2) {
                     cli jugador1 = Servidor.clientesConectados.get(0);
@@ -183,11 +182,13 @@ class HiloServidor extends Thread {
                     
                     contadorPartidas++;
                     HandlerPartida partida = new HandlerPartida(jugador1, jugador2, "Partida " + contadorPartidas);
-                    
-                    partida.run();
+                    Thread a = new  Thread(partida);
+                    a.start(); 
 
                     ps.println("\n--- Partida #" + contadorPartidas + " creada. Esperando posicionamiento. ---\n");
                 }//end if
+				
+				newCliente.hilo.start();
 
 			} catch (IOException e) {
 				e.printStackTrace();
