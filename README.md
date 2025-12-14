@@ -14,15 +14,18 @@ Profesor de la materia
 
 ## 
 
-# Ramas/Branches
-## ClaseIntroducción 1 y 2
-Son las ramas de las primeras 3 o 4 clases antes de manejar bien el repositorio (no había planes de tener TPs y Guías en este repo, originalmente era sólo de las clases así que se dividirían las ramas en base a eso)
+# Contenido de la rama
+- Carpeta TP1
+   - src/main/java/TPFinal
+       - []
+   - pom.xml
+- .gitignore
+- README.md
 
-## Clases
-Dentro de esta rama se encontrarán las ramas dedicas al contenido dado en cada clase. Dentro de ellas estarán todas las clases (exceptuando las que ya están en las ramas externas: ClaseIntroduccion, ClaseIntroduccion2) dividas cada una en su rama.
+## 
+<img src="https://adorotedevote.neocities.org/images/straw.gif" width="600" height="100">
+<!-- No te fijes el link profe, no pude encontrar la fuente original, habían muchas resubidas :( -->
 
-## Guias
-Rama donde se encuentran todas las guias realizadas para la materia.
+##
+# Consigna
 
-## TPs
-Rama dedicada a los Trabajos Prácticos realizados para la materia.
