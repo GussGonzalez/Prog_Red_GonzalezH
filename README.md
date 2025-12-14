@@ -82,6 +82,7 @@ Implementar manejo robusto de excepciones. Asegurar que todos los recursos sean 
 
 
  - Representa a un jugador (Jugador 1 o Jugador 2).
+
 **Atributos**: String nombre – Nombre del jugador. String simbolo – Símbolo del jugador ('X' o 'O').
 | Métodos | Explicación |
 |     ---    |   ---   |
@@ -89,6 +90,7 @@ Implementar manejo robusto de excepciones. Asegurar que todos los recursos sean 
 
 
 - Gestiona las conexiones con los clientes y el flujo de la partida.
+
 | Métodos | Explicación |
 |     ---    |   ---   |
 | `iniciarServidor()`| Inicia el servidor y espera conexiones. |
@@ -98,6 +100,7 @@ Implementar manejo robusto de excepciones. Asegurar que todos los recursos sean 
 
 
 - Conecta al jugador al servidor y gestiona su participación en el juego.
+
 | Métodos | Explicación |
 |     ---    |   ---   |
 | `conectarConServidor()`| Establece la conexión con el servidor. |
