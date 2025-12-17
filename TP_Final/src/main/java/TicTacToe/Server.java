@@ -36,7 +36,6 @@ public class Server {
 				partida.mostrarTablero(O.dos, O);
 				
 				O.dos.writeUTF("Es el turno del jugador X, por favor espere...");
-				X.dos.writeBoolean(true);
 				respuesta = mostrarOpciones(X.dos, X.dis, X);
 				valido = validarMovimiento(partida, respuesta);
 				while(!valido) {
@@ -45,7 +44,6 @@ public class Server {
 				}//end while
 				partida.colocarSimbolo(Integer.valueOf(respuesta.charAt(0)), Integer.valueOf(respuesta.charAt(0)), "X");
 				valido = false;
-				X.dos.writeBoolean(false);
 				
 				estado = notificarEstadoJuego(partida, "X", "O");
 				if (estado == "X" || estado == "O" || estado == "Empate") {
@@ -65,7 +63,6 @@ public class Server {
 				}//end if
 				
 				X.dos.writeUTF("Es el turno del jugador O, por favor espere...");
-				O.dos.writeBoolean(true);
 				respuesta = mostrarOpciones(O.dos, O.dis, O);
 				valido = validarMovimiento(partida, respuesta);
 				while(!valido) {
@@ -74,7 +71,6 @@ public class Server {
 				}//end while
 				partida.colocarSimbolo(Integer.valueOf(respuesta.charAt(0)), Integer.valueOf(respuesta.charAt(0)), "O");
 				valido = false;
-				O.dos.writeBoolean(false);
 				
 				if (estado == "X" || estado == "O" || estado == "Empate") {
 					if (estado == "X") {
@@ -111,7 +107,7 @@ public class Server {
 			jugador.dos.writeUTF("   0.  	(Desconectar)");
 			jugador.dos.writeUTF("¡ Ingresa el número que se desea ejecutar ! : " + colors.RESET);
 			
-			switch (jugador.dis.readInt()) {
+			switch ( Integer.valueOf(jugador.dis.readUTF()) ) {
             case 1:
                 jugador.dos.writeUTF("Ingrese la fila en la que desee colocar: ");
                 res = jugador.dis.readUTF();
@@ -281,8 +277,8 @@ class HiloServidor extends Thread {
 				if (Server.clientesConectados.size() >= 2){ 
 					cli jugador1 = Server.clientesConectados.get(0); 
 					cli jugador2 = Server.clientesConectados.get(1);
-					jugador1.dos.writeBoolean(true);
-					jugador2.dos.writeBoolean(true);
+					//jugador1.dos.writeUTF("TRUE");
+					//jugador2.dos.writeUTF("TRUE");
 					Server.gestionarPartida(jugador1, jugador2, partidaFinalizada);
 				}//end if
 				

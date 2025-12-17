@@ -66,22 +66,26 @@ public class Client {
 			@Override
 			public void run() {
 				while (isConnected && !partidaFinalizada) {
-					String res;
-					try {
-						res = buff.readLine();
-						dosServidor.writeInt(Integer.valueOf(res));
-						ps.print("Esperando respuesta...");
-					} catch (IOException e) {
-						e.printStackTrace();
+					Integer res;
+					boolean valido = false;
+					while (!valido) {
+						try{
+							res = Integer.valueOf(buff.readLine());
+							dosServidor.writeUTF(String.valueOf(res));
+							valido = true;
+						} catch (IOException e) {
+							ps.println(colors.RED + "Input inválido, ingrese un único número." + colors.RESET);
+							e.printStackTrace();
+						}
+						
+						try {
+							isConnected = false;
+							dosServidor.close();
+							sock.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}//end try/catch
 					}
-					
-					try {
-						isConnected = false;
-						dosServidor.close();
-						sock.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}//end try/catch
 				}//end while
 			}//end run
 		}, "ENVIO");
@@ -114,23 +118,24 @@ public class Client {
 		recibirEstadoJuego.start();
 		realizarMovimiento.start();
 		
-
+		/*
 		while (!compañeroConectado) { 
 			try {
 				ps.print("Esperando compañero...");
-				compañeroConectado = disServidor.readBoolean();
+				compañeroConectado = disServidor.readUTF() == "TRUE" ? true : false ;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}//end try/catch
 		}//end while
 		
+
 		while(!partidaFinalizada) {
 			try {
-				miTurno = disServidor.readBoolean();
-				
+				//miTurno = disServidor.readUTF() == "TRUE" ? true : false;
+				 
 				while (miTurno) {
-					miTurno = disServidor.readBoolean();
-				}
+					//miTurno = disServidor.readUTF() == "TRUE" ? true : false;
+				}//end while
 			
 				if (disServidor.readUTF() == "Partida finalizada") {
 					partidaFinalizada = true;
@@ -139,6 +144,7 @@ public class Client {
 				e.printStackTrace();
 			}//end try/catch
 		}//end while
+		*/
 	}//end Client
 	
 }//Client
