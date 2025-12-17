@@ -26,7 +26,7 @@ public class Client {
 	InetAddress IP = null;
 	int puerto = 7777;
 	Socket sock = null;
-	boolean isConected = false;
+	boolean isConnected = false;
 
 	boolean sendNickname = false;
 	boolean compañeroConectado = false;
@@ -35,15 +35,16 @@ public class Client {
 
 	public void conectarConServidor() {
 		try {
+			IP = InetAddress.getByName("127.0.0.1");
+			
 			sock = new Socket(IP, puerto);
 			
-			isConected = true;
+			isConnected = true;
 			sendNickname = true;
 			
 			disServidor = new DataInputStream(sock.getInputStream());
 			dosServidor = new DataOutputStream(sock.getOutputStream());
-			
-			IP = InetAddress.getByName("127.0.0.1");
+
 			if (sock.isConnected() && sendNickname) {
 				ps.println(colors.YELLOW + "Ingrese su nickname:" + colors.RESET);
 				String ID = buff.readLine();
@@ -74,7 +75,7 @@ public class Client {
 				}
 				
 				try {
-					isConected = false;
+					isConnected = false;
 					dosServidor.close();
 					sock.close();
 				} catch (IOException e) {
@@ -88,17 +89,17 @@ public class Client {
 			@Override
 			public void run() {
 				String msg = "";
-				while (isConected) {
+				while (isConnected) {
 					 try {
 						msg = disServidor.readUTF();
-						ps.println( colors.YELLOW + msg + colors.RESET);
+						ps.println(msg);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}//end try/catch
 				}//end while
 				
 				try {
-					isConected = false;
+					isConnected = false;
 					disServidor.close();
 					sock.close();
 				} catch (IOException e) {
@@ -115,6 +116,7 @@ public class Client {
 			try {
 				ps.print("Esperando compañero...");
 				compañeroConectado = disServidor.readBoolean();
+				partidaFinalizada = false;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -129,6 +131,7 @@ public class Client {
 					
 				}//end while
 			
+				partidaFinalizada = disServidor.readBoolean();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
