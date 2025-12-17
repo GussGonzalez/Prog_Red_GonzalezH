@@ -29,12 +29,12 @@ public class Client {
 	boolean isConected = false;
 
 	boolean sendNickname = false;
+	boolean compañeroConectado = false;
+	
+	//while (!compañeroConectado) { ps.print("Esperando compañero...");}
 
-
-	public Client() {
+	public void conectarConServidor() {
 		try {
-
-			IP = InetAddress.getByName("127.0.0.1");
 			sock = new Socket(IP, puerto);
 			
 			isConected = true;
@@ -42,39 +42,36 @@ public class Client {
 			
 			disServidor = new DataInputStream(sock.getInputStream());
 			dosServidor = new DataOutputStream(sock.getOutputStream());
-
+			
+			IP = InetAddress.getByName("127.0.0.1");
 			if (sock.isConnected() && sendNickname) {
 				ps.println(colors.YELLOW + "Ingrese su nickname:" + colors.RESET);
 				String ID = buff.readLine();
 				dosServidor.writeUTF(ID);
 				sendNickname = false;
-
-				ps.println(colors.YELLOW + "¡ Bienvenido a tu sala de TicTacToe " + ID + " !" + colors.RESET);
+				ps.println(colors.YELLOW + "¡ Bienvenido al servidor TicTacToe " + ID + " !" + colors.RESET);
 			}//end if
-
-			ps.print("Esperando compañero...");
-
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}//end try/catch
+	}
 
+	public Client() {
+		conectarConServidor();
 		
-		Thread enviarMensaje = new Thread(new Runnable() {
+		Thread realizarMovimiento = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				String msg = "";
-				while (!msg.equalsIgnoreCase("/salir")) {
-					try {
-						msg = buff.readLine();
-
-						dosServidor.writeUTF(msg);
-						ps.print("Esperando respuesta...");
-					} catch (IOException e) {
-						e.printStackTrace();
-					}//end try/catch
-				}//end while
+				String res;
+				try {
+					res = buff.readLine();
+					dosServidor.writeUTF(res);
+					ps.print("Esperando respuesta...");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				
 				try {
 					isConected = false;
@@ -86,7 +83,8 @@ public class Client {
 			}//end run
 		}, "ENVIO");
 
-		Thread recibirMensaje = new Thread(new Runnable() {
+		
+		Thread recibirEstadoJuego = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				String msg = "";
@@ -110,8 +108,8 @@ public class Client {
 		}, "RECIBIR");
 
 		
-		recibirMensaje.start();
-		enviarMensaje.start();
+		recibirEstadoJuego.start();
+		realizarMovimiento.start();
 	}//end Client
 	
 }//Client

@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import Utils.colors;
 
@@ -14,14 +15,31 @@ public class Server {
 
 	PrintStream ps = new PrintStream(System.out);
 	public static ArrayList<cli> clientesConectados = new ArrayList<>();
-
-	public Server() {
+	
+	void iniciarServidor() {
 		ps.println("Iniciando servidor TicTacToe");
 		HiloServidor serv = new HiloServidor();
 		serv.setName("TicTacToeServer");
 
 		serv.start();
+	}//end iniciarServidor
+	
+	public void realizarMovimiento(Tablero tablero, int fil, int col, String simbolo) {
+		tablero.colocarSimbolo(fil, col, simbolo);;
 	}
+	
+	public static void gestionarPartida(cli X, cli O){
+		Tablero partida = new Tablero();
+		try {
+			X.dos.writeUTF("");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}//end try/catch
+	}//end gestionarPartida
+
+	public Server() {
+		iniciarServidor();
+	}//end Server
 }//Server
 
 class cli implements Runnable {
@@ -47,44 +65,25 @@ class cli implements Runnable {
 	}//end cli
 
 	public void run() {
-		String msg = "";
 		String msgRecibido = "";
-		String cli = "";
 
 		while (sock.isConnected() && this.isConected) {
 			try {
 				msgRecibido = dis.readUTF();
 
 				ps.println("\n" + colors.YELLOW + "El cliente " + this.nick + " envia:" + msgRecibido + colors.RESET);
+				this.dos.writeUTF(msgRecibido);
 
-				if (msgRecibido.startsWith("/")) {
-					switch (msgRecibido.substring(1, msgRecibido.length())) {
-					case "salir":
+				if (msgRecibido == "0") {
 						this.dis.close();
 						this.dos.close();
 						this.isConected = false;
 						this.sock.close();
-						Server.clientesConectados.remove(this);
-						ps.println(
-								colors.YELLOW + "\tCliente " + this.nick + " se ha desconectado.\n" + colors.RESET);
+						Server.clientesConectados.remove(this); 
+						ps.println( colors.YELLOW + "\tCliente " + this.nick + " se ha desconectado.\n" + colors.RESET );
 						this.notificarClientes(false);
 						break;
-					}//end switch
 				}//end if
-
-				for (cli c : Server.clientesConectados) {
-					if (msg.equals("") || cli.equals(""))
-						break;
-
-					if (cli.toLowerCase().equals(c.nick) && this.isConected) {
-						c.dos.writeUTF(this.nick + ":" + msg);
-						break;
-					} else if (cli.equals("Todos") && this.isConected
-							&& !c.nick.toLowerCase().equals(this.nick.toLowerCase())) {
-						c.dos.writeUTF(this.nick + ":" + msg);
-					}//end if/else if
-
-				}//end for
 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -98,19 +97,10 @@ class cli implements Runnable {
 			if (c.isConected && !c.nick.equals(this.nick)) {
 				try {
 					if (b) {
-						c.dos.writeUTF(
-								colors.YELLOW 
-								+ "\t---" 
-								+ this.nick 
-								+ " se ha unido al chat---" 
-								+ colors.RESET);
+						c.dos.writeUTF(colors.YELLOW + "\t---" + this.nick + " se ha unido al chat---" + colors.RESET);
 					} else {
-						c.dos.writeUTF(
-								colors.YELLOW
-								+ "\t---" 
-								+ this.nick 
-								+ " se ha desconectado---" 
-								+ colors.RESET);
+						c.dos.writeUTF(colors.YELLOW + "\t---" + this.nick + " se ha desconectado---" + colors.RESET);
+						//terminar partida, forzar detenimiento o designar ganador al que no se fue.
 					}//end if/else
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -131,22 +121,15 @@ class HiloServidor extends Thread {
 	DataInputStream disCliente;
 	DataOutputStream dosCliente;
 
-	public HiloServidor() {
-
-		try {
-			server = new ServerSocket(puerto);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}//end try/catch
+	public HiloServidor() { try { server = new ServerSocket(puerto); } catch (IOException e) { e.printStackTrace(); }//end try/catch 
 	}//end HiloServidor
 
 	@Override
 	public void run() {
 
-		while (true) {
+		while (!partidaFinalizada()) {
 			try {
-				ps.println("Esperando conexion con un cliente");
+				ps.println("Esperando conexión con un cliente");
 				sockAux = server.accept();
 
 				ps.println(colors.PURPLE + "Cliente conectado: " + sockAux.getInetAddress().getHostAddress()
@@ -155,18 +138,21 @@ class HiloServidor extends Thread {
 				disCliente = new DataInputStream(sockAux.getInputStream());
 				dosCliente = new DataOutputStream(sockAux.getOutputStream());
 
-				ps.println(colors.YELLOW + "Creando un cliente... Esperano NickName" + colors.RESET);
-
+				ps.println(colors.YELLOW + "Creando un cliente... Esperando NickName: " + colors.RESET);
 				String ID = disCliente.readUTF();
-
 				cli newCliente = new cli(sockAux, ID, disCliente, dosCliente);
 
-				ps.println(
-						colors.GREEN + "El cliente " + newCliente.nick + " accedió al servidor.\n" + colors.RESET);
+				ps.println(colors.GREEN + "El cliente " + newCliente.nick + " accedió al servidor.\n" + colors.RESET);
 
 				Server.clientesConectados.add(newCliente);
 				newCliente.hilo.start();
 
+				if (Server.clientesConectados.size() >= 2){ 
+					cli jugador1 = Server.clientesConectados.get(0); 
+					cli jugador2 = Server.clientesConectados.get(1); 
+					Server.gestionarPartida(jugador1, jugador2);
+				}//end if
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}//end try/catch
@@ -174,5 +160,4 @@ class HiloServidor extends Thread {
 		}//end while
 
 	}//end run
-
 }//HiloServidor
