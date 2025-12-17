@@ -67,7 +67,7 @@ public class Client {
 				String res;
 				try {
 					res = buff.readLine();
-					dosServidor.writeUTF(res);
+					dosServidor.writeInt(Integer.valueOf(res));
 					ps.print("Esperando respuesta...");
 				} catch (IOException e) {
 					e.printStackTrace();

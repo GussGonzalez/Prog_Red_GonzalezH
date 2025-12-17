@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import Utils.colors;
 
@@ -24,18 +23,75 @@ public class Server {
 		serv.start();
 	}//end iniciarServidor
 	
-	public void realizarMovimiento(Tablero tablero, int fil, int col, String simbolo) {
-		tablero.colocarSimbolo(fil, col, simbolo);;
-	}
-	
-	public static void gestionarPartida(cli X, cli O){
+	public static void gestionarPartida(cli X, cli O, boolean partidaFinalizada){
 		Tablero partida = new Tablero();
+		while(X.isConected && O.isConected) {
+			try {
+				partida.mostrarTablero(X.dos, X);
+				partida.mostrarTablero(O.dos, O);
+				
+				O.dos.writeUTF("Es el turno del jugador X, por favor espere...");
+				mostrarOpciones(X.dos, X.dis, X);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}//end try/catch
+			
+		}//end while
+
+	}//end gestionarPartida
+	
+	private static String mostrarOpciones(DataOutputStream dos, DataInputStream dis, cli jugador) {
+		String res = "";
 		try {
-			X.dos.writeUTF("");
+			jugador.dos.writeUTF(colors.YELLOW + "¡Es tu turno! ");
+			
+			jugador.dos.writeUTF(colors.CYAN + "\n --- --- 「 ✦ Opciones ✦ 」 --- --- ");
+			jugador.dos.writeUTF("   1.  	(Realizar movimiento)");
+			jugador.dos.writeUTF("   0.  	(Desconectar)");
+			jugador.dos.writeUTF("¡ Ingresa el número que se desea ejecutar ! : " + colors.RESET);
+			
+			switch (jugador.dis.readInt()) {
+            case 1:
+                jugador.dos.writeUTF("Ingrese la fila en la que desee colocar: ");
+                res = jugador.dis.readUTF();
+                
+                jugador.dos.writeUTF("Ingrese la columna en la que desee colocar: ");
+                res += jugador.dis.readUTF();
+                break;
+            case 0:
+            	jugador.dos.writeUTF("¡Saliendo del programa! Gracias por probar :3");
+                jugador.isConected = false;
+                break;
+            default:
+            	jugador.dos.writeUTF("Opción inválida. Por favor, ingrese un número de las opciones.");
+			}//end switch/case
+			
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}//end try/catch
-	}//end gestionarPartida
+		
+		return res;
+	}//end mostrarOpciones
+	
+	public void realizarMovimiento(Tablero tablero, int fil, int col, String simbolo) {
+		tablero.colocarSimbolo(fil, col, simbolo);
+	}//end realizarMovimiento
+	
+	private boolean validarMovimiento(Tablero tablero, String res) {
+		if (res != "" && res.length() <2) {
+			Integer fila = Integer.valueOf(res.charAt(0));
+			Integer columna = Integer.valueOf(res.charAt(1));
+			
+			if(tablero.esVacia(fila, columna)) {
+				return true;
+			}//end if
+		}//end if
+			return false;
+	}//validarMovimiento
+	
+	private void notificarEstadoJuego(Tablero tablero, DataOutputStream dos, cli jugador){}//notificarEstadoJuego
 
 	public Server() {
 		iniciarServidor();
@@ -65,7 +121,9 @@ class cli implements Runnable {
 	}//end cli
 
 	public void run() {
-		String msgRecibido = "";
+		/*
+		 * String msgRecibido = "";
+		 
 
 		while (sock.isConnected() && this.isConected) {
 			try {
@@ -89,6 +147,7 @@ class cli implements Runnable {
 				e.printStackTrace();
 			}//end try/catch
 		}//end while
+		*/
 
 	}//end run
 
@@ -120,6 +179,8 @@ class HiloServidor extends Thread {
 
 	DataInputStream disCliente;
 	DataOutputStream dosCliente;
+	
+	public boolean partidaFinalizada = false;
 
 	public HiloServidor() { try { server = new ServerSocket(puerto); } catch (IOException e) { e.printStackTrace(); }//end try/catch 
 	}//end HiloServidor
@@ -127,7 +188,7 @@ class HiloServidor extends Thread {
 	@Override
 	public void run() {
 
-		while (!partidaFinalizada()) {
+		while (partidaFinalizada == false) {
 			try {
 				ps.println("Esperando conexión con un cliente");
 				sockAux = server.accept();
@@ -150,7 +211,7 @@ class HiloServidor extends Thread {
 				if (Server.clientesConectados.size() >= 2){ 
 					cli jugador1 = Server.clientesConectados.get(0); 
 					cli jugador2 = Server.clientesConectados.get(1); 
-					Server.gestionarPartida(jugador1, jugador2);
+					Server.gestionarPartida(jugador1, jugador2, partidaFinalizada);
 				}//end if
 				
 			} catch (IOException e) {

@@ -1,5 +1,7 @@
 package TicTacToe;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,10 +32,15 @@ public class Tablero {
 	
 	public boolean esVacia(int fila, int columna) { if (tablero.get(fila).get(columna) != " " ) { return false; } else {return true;} }//end esVacia
 	
-	public void mostrarTablero() {
-		ps.println("|" + tablero.get(0).get(0) + "|" + tablero.get(1).get(0) + "|" + tablero.get(2).get(0) + "|");
-		ps.println("|" + tablero.get(0).get(1) + "|" + tablero.get(1).get(1) + "|" + tablero.get(2).get(1) + "|");
-		ps.println("|" + tablero.get(0).get(2) + "|" + tablero.get(1).get(2) + "|" + tablero.get(2).get(2) + "|");
+	public void mostrarTablero(DataOutputStream dos, cli Jugador) {
+		try {
+			Jugador.dos.writeUTF("|" + tablero.get(0).get(0) + "|" + tablero.get(1).get(0) + "|" + tablero.get(2).get(0) + "|");
+			Jugador.dos.writeUTF("|" + tablero.get(0).get(1) + "|" + tablero.get(1).get(1) + "|" + tablero.get(2).get(1) + "|");
+			Jugador.dos.writeUTF("|" + tablero.get(0).get(2) + "|" + tablero.get(1).get(2) + "|" + tablero.get(2).get(2) + "|");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}//end mostrarTablero
 	
 	public void colocarSimbolo(int fila, int columna, String simbolo) { marcar(fila, columna, simbolo); }//end modificarTablero
