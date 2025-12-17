@@ -27,7 +27,6 @@ public class Server {
 		Tablero partida = new Tablero();
 		String respuesta = "";
 		boolean valido = false;
-		boolean suTurno = false;
 		String estado = notificarEstadoJuego(partida, "X", "O");
 		partidaFinalizada = false;
 		
@@ -37,15 +36,16 @@ public class Server {
 				partida.mostrarTablero(O.dos, O);
 				
 				O.dos.writeUTF("Es el turno del jugador X, por favor espere...");
-				X.dos.writeBoolean(suTurno = true);
+				X.dos.writeBoolean(true);
 				respuesta = mostrarOpciones(X.dos, X.dis, X);
 				valido = validarMovimiento(partida, respuesta);
 				while(!valido) {
 					respuesta = mostrarOpciones(X.dos, X.dis, X);
 					valido = validarMovimiento(partida, respuesta);
 				}//end while
-				suTurno = false;
+				partida.colocarSimbolo(Integer.valueOf(respuesta.charAt(0)), Integer.valueOf(respuesta.charAt(0)), "X");
 				valido = false;
+				X.dos.writeBoolean(false);
 				
 				estado = notificarEstadoJuego(partida, "X", "O");
 				if (estado == "X" || estado == "O" || estado == "Empate") {
@@ -58,20 +58,23 @@ public class Server {
 					}else {
 						O.dos.writeUTF("Ha sido un empate");
 					}//end if/else if/else
-						
+					
+					X.dos.writeUTF("Partida Finalizada");
+					O.dos.writeUTF("Partida Finalizada");
 					partidaFinalizada = true;
 				}//end if
 				
 				X.dos.writeUTF("Es el turno del jugador O, por favor espere...");
-				O.dos.writeBoolean(suTurno = true);
+				O.dos.writeBoolean(true);
 				respuesta = mostrarOpciones(O.dos, O.dis, O);
 				valido = validarMovimiento(partida, respuesta);
 				while(!valido) {
 					respuesta = mostrarOpciones(O.dos, O.dis, O);
 					valido = validarMovimiento(partida, respuesta);
 				}//end while
-				suTurno = false;
+				partida.colocarSimbolo(Integer.valueOf(respuesta.charAt(0)), Integer.valueOf(respuesta.charAt(0)), "O");
 				valido = false;
+				O.dos.writeBoolean(false);
 				
 				if (estado == "X" || estado == "O" || estado == "Empate") {
 					if (estado == "X") {
@@ -83,7 +86,9 @@ public class Server {
 					}else {
 						O.dos.writeUTF("Ha sido un empate");
 					}//end if/else if/else
-						
+					
+					X.dos.writeUTF("Partida Finalizada");
+					O.dos.writeUTF("Partida Finalizada");
 					partidaFinalizada = true;
 				}//end if
 			} catch (IOException e) {

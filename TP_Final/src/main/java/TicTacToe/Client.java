@@ -30,7 +30,7 @@ public class Client {
 
 	boolean sendNickname = false;
 	boolean compañeroConectado = false;
-	boolean partidaFinalizada = true;
+	boolean partidaFinalizada = false;
 	boolean miTurno = false;
 
 	public void conectarConServidor() {
@@ -65,22 +65,24 @@ public class Client {
 		Thread realizarMovimiento = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				String res;
-				try {
-					res = buff.readLine();
-					dosServidor.writeInt(Integer.valueOf(res));
-					ps.print("Esperando respuesta...");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
-				try {
-					isConnected = false;
-					dosServidor.close();
-					sock.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}//end try/catch
+				while (isConnected && !partidaFinalizada) {
+					String res;
+					try {
+						res = buff.readLine();
+						dosServidor.writeInt(Integer.valueOf(res));
+						ps.print("Esperando respuesta...");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+					try {
+						isConnected = false;
+						dosServidor.close();
+						sock.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}//end try/catch
+				}//end while
 			}//end run
 		}, "ENVIO");
 
@@ -112,13 +114,12 @@ public class Client {
 		recibirEstadoJuego.start();
 		realizarMovimiento.start();
 		
+
 		while (!compañeroConectado) { 
 			try {
 				ps.print("Esperando compañero...");
 				compañeroConectado = disServidor.readBoolean();
-				partidaFinalizada = false;
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}//end try/catch
 		}//end while
@@ -128,12 +129,13 @@ public class Client {
 				miTurno = disServidor.readBoolean();
 				
 				while (miTurno) {
-					
-				}//end while
+					miTurno = disServidor.readBoolean();
+				}
 			
-				partidaFinalizada = disServidor.readBoolean();
+				if (disServidor.readUTF() == "Partida finalizada") {
+					partidaFinalizada = true;
+				}//end if
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}//end try/catch
 		}//end while
