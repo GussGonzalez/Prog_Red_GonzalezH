@@ -30,8 +30,8 @@ public class Client {
 
 	boolean sendNickname = false;
 	boolean compañeroConectado = false;
-	
-	//while (!compañeroConectado) { ps.print("Esperando compañero...");}
+	boolean partidaFinalizada = true;
+	boolean miTurno = false;
 
 	public void conectarConServidor() {
 		try {
@@ -110,6 +110,30 @@ public class Client {
 		
 		recibirEstadoJuego.start();
 		realizarMovimiento.start();
+		
+		while (!compañeroConectado) { 
+			try {
+				ps.print("Esperando compañero...");
+				compañeroConectado = disServidor.readBoolean();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}//end try/catch
+		}//end while
+		
+		while(!partidaFinalizada) {
+			try {
+				miTurno = disServidor.readBoolean();
+				
+				while (miTurno) {
+					
+				}//end while
+			
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}//end try/catch
+		}//end while
 	}//end Client
 	
 }//Client

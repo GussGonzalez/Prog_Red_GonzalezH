@@ -27,30 +27,65 @@ public class Server {
 		Tablero partida = new Tablero();
 		String respuesta = "";
 		boolean valido = false;
+		boolean suTurno = false;
+		String estado = notificarEstadoJuego(partida, "X", "O");
+		partidaFinalizada = false;
 		
-		while(X.isConected && O.isConected) {
+		while(X.isConected && O.isConected && !partidaFinalizada) {
 			try {
 				partida.mostrarTablero(X.dos, X);
 				partida.mostrarTablero(O.dos, O);
 				
 				O.dos.writeUTF("Es el turno del jugador X, por favor espere...");
+				X.dos.writeBoolean(suTurno = true);
 				respuesta = mostrarOpciones(X.dos, X.dis, X);
 				valido = validarMovimiento(partida, respuesta);
 				while(!valido) {
 					respuesta = mostrarOpciones(X.dos, X.dis, X);
 					valido = validarMovimiento(partida, respuesta);
 				}//end while
+				suTurno = false;
 				valido = false;
 				
+				estado = notificarEstadoJuego(partida, "X", "O");
+				if (estado == "X" || estado == "O" || estado == "Empate") {
+					if (estado == "X") {
+						X.dos.writeUTF("¡Has ganado!");
+						O.dos.writeUTF("Has perdido.");
+					}else if(estado == "O") {
+						O.dos.writeUTF("¡Has ganado!");
+						X.dos.writeUTF("Has perdido.");
+					}else {
+						O.dos.writeUTF("Ha sido un empate");
+					}//end if/else if/else
+						
+					partidaFinalizada = true;
+				}//end if
+				
 				X.dos.writeUTF("Es el turno del jugador O, por favor espere...");
+				O.dos.writeBoolean(suTurno = true);
 				respuesta = mostrarOpciones(O.dos, O.dis, O);
 				valido = validarMovimiento(partida, respuesta);
 				while(!valido) {
 					respuesta = mostrarOpciones(O.dos, O.dis, O);
 					valido = validarMovimiento(partida, respuesta);
 				}//end while
+				suTurno = false;
 				valido = false;
 				
+				if (estado == "X" || estado == "O" || estado == "Empate") {
+					if (estado == "X") {
+						X.dos.writeUTF("¡Has ganado!");
+						O.dos.writeUTF("Has perdido.");
+					}else if(estado == "O") {
+						O.dos.writeUTF("¡Has ganado!");
+						X.dos.writeUTF("Has perdido.");
+					}else {
+						O.dos.writeUTF("Ha sido un empate");
+					}//end if/else if/else
+						
+					partidaFinalizada = true;
+				}//end if
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -58,6 +93,7 @@ public class Server {
 			
 		}//end while
 
+		//partidaFinalizada = true;
 	}//end gestionarPartida
 	
 	private static String mostrarOpciones(DataOutputStream dos, DataInputStream dis, cli jugador) {
@@ -110,7 +146,7 @@ public class Server {
 			return false;
 	}//validarMovimiento
 	
-	private String notificarEstadoJuego(Tablero tablero, DataOutputStream dos, String simbolo1, String simbolo2){
+	private static String notificarEstadoJuego(Tablero tablero, String simbolo1, String simbolo2){
 		if (!tablero.esGanador(simbolo1)) {
 			if (!tablero.esEmpate(simbolo1, simbolo2)) {
 				return "En curso";
