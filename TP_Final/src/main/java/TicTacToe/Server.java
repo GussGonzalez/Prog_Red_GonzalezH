@@ -25,13 +25,32 @@ public class Server {
 	
 	public static void gestionarPartida(cli X, cli O, boolean partidaFinalizada){
 		Tablero partida = new Tablero();
+		String respuesta = "";
+		boolean valido = false;
+		
 		while(X.isConected && O.isConected) {
 			try {
 				partida.mostrarTablero(X.dos, X);
 				partida.mostrarTablero(O.dos, O);
 				
 				O.dos.writeUTF("Es el turno del jugador X, por favor espere...");
-				mostrarOpciones(X.dos, X.dis, X);
+				respuesta = mostrarOpciones(X.dos, X.dis, X);
+				valido = validarMovimiento(partida, respuesta);
+				while(!valido) {
+					respuesta = mostrarOpciones(X.dos, X.dis, X);
+					valido = validarMovimiento(partida, respuesta);
+				}//end while
+				valido = false;
+				
+				X.dos.writeUTF("Es el turno del jugador O, por favor espere...");
+				respuesta = mostrarOpciones(O.dos, O.dis, O);
+				valido = validarMovimiento(partida, respuesta);
+				while(!valido) {
+					respuesta = mostrarOpciones(O.dos, O.dis, O);
+					valido = validarMovimiento(partida, respuesta);
+				}//end while
+				valido = false;
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -79,7 +98,7 @@ public class Server {
 		tablero.colocarSimbolo(fil, col, simbolo);
 	}//end realizarMovimiento
 	
-	private boolean validarMovimiento(Tablero tablero, String res) {
+	private static boolean validarMovimiento(Tablero tablero, String res) {
 		if (res != "" && res.length() <2) {
 			Integer fila = Integer.valueOf(res.charAt(0));
 			Integer columna = Integer.valueOf(res.charAt(1));
@@ -91,7 +110,17 @@ public class Server {
 			return false;
 	}//validarMovimiento
 	
-	private void notificarEstadoJuego(Tablero tablero, DataOutputStream dos, cli jugador){}//notificarEstadoJuego
+	private String notificarEstadoJuego(Tablero tablero, DataOutputStream dos, String simbolo1, String simbolo2){
+		if (!tablero.esGanador(simbolo1)) {
+			if (!tablero.esEmpate(simbolo1, simbolo2)) {
+				return "En curso";
+			}else if(!tablero.esGanador(simbolo2)) {
+				return "Empate";
+			}else
+				return simbolo2;
+		}else
+			return simbolo1;
+	}//notificarEstadoJuego
 
 	public Server() {
 		iniciarServidor();
@@ -210,7 +239,9 @@ class HiloServidor extends Thread {
 
 				if (Server.clientesConectados.size() >= 2){ 
 					cli jugador1 = Server.clientesConectados.get(0); 
-					cli jugador2 = Server.clientesConectados.get(1); 
+					cli jugador2 = Server.clientesConectados.get(1);
+					jugador1.dos.writeBoolean(true);
+					jugador2.dos.writeBoolean(true);
 					Server.gestionarPartida(jugador1, jugador2, partidaFinalizada);
 				}//end if
 				

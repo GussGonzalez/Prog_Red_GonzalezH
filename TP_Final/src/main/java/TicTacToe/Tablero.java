@@ -63,8 +63,8 @@ public class Tablero {
 		return false;
 	}//end esGanador
 	
-	public boolean esEmpate(String simbolo) {
-		if (esTableroCompleto() && !esGanador(simbolo)) {
+	public boolean esEmpate(String simbolo1, String simbolo2) {
+		if (esTableroCompleto() && !esGanador(simbolo1) && !esGanador(simbolo2)) {
 			return true;
 		}//end if
 		return false;
