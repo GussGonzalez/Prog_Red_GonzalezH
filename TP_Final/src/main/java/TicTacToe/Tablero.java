@@ -25,8 +25,8 @@ public class Tablero {
 			tablero.get(fila).set(columna, colors.RED + simbolo + colors.RESET);
 		}else if (simbolo == "O") {
 			tablero.get(fila).set(columna, colors.BLUE + simbolo + colors.RESET);
-		}else{
-			ps.println("Símbolo no válido. Por favor coloque una X o una O.");
+		//}else{
+			//ps.println("Símbolo no válido. Por favor coloque una X o una O.");
 		}//end if/else if
 	}//end marcar
 	
@@ -34,13 +34,12 @@ public class Tablero {
 	
 	public void mostrarTablero(DataOutputStream dos, cli Jugador) {
 		try {
-			Jugador.dos.writeUTF("|" + tablero.get(0).get(0) + "|" + tablero.get(1).get(0) + "|" + tablero.get(2).get(0) + "|");
-			Jugador.dos.writeUTF("|" + tablero.get(0).get(1) + "|" + tablero.get(1).get(1) + "|" + tablero.get(2).get(1) + "|");
-			Jugador.dos.writeUTF("|" + tablero.get(0).get(2) + "|" + tablero.get(1).get(2) + "|" + tablero.get(2).get(2) + "|");
+			Jugador.dos.writeUTF("| " + tablero.get(0).get(0) + " | " + tablero.get(1).get(0) + " | " + tablero.get(2).get(0) + " |");
+			Jugador.dos.writeUTF("| " + tablero.get(0).get(1) + " | " + tablero.get(1).get(1) + " | " + tablero.get(2).get(1) + " |");
+			Jugador.dos.writeUTF("| " + tablero.get(0).get(2) + " | " + tablero.get(1).get(2) + " | " + tablero.get(2).get(2) + " |");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}//end try/catch
 	}//end mostrarTablero
 	
 	public void colocarSimbolo(int fila, int columna, String simbolo) { marcar(fila, columna, simbolo); }//end modificarTablero

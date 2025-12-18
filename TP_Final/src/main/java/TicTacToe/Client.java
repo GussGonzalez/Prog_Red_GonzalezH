@@ -33,6 +33,17 @@ public class Client {
 	boolean partidaFinalizada = false;
 	boolean miTurno = false;
 
+	private void vaciar() {
+		try {
+			if (System.in.available() > 0) {
+			    buff.readLine(); // flush leftover line
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}//end try/catch
+	}//end vaciar
+	
 	public void conectarConServidor() {
 		try {
 			IP = InetAddress.getByName("127.0.0.1");
@@ -71,12 +82,14 @@ public class Client {
 					while (!valido) {
 						try{
 							res = Integer.valueOf(buff.readLine());
+							vaciar();
 							dosServidor.writeUTF(String.valueOf(res));
 							valido = true;
 						} catch (IOException e) {
 							ps.println(colors.RED + "Input inválido, ingrese un único número." + colors.RESET);
 							e.printStackTrace();
-						}
+							valido = false;
+						}//end try/catch
 						
 						try {
 							isConnected = false;

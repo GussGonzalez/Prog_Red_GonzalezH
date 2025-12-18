@@ -13,6 +13,7 @@ import Utils.colors;
 public class Server {
 
 	PrintStream ps = new PrintStream(System.out);
+	static PrintStream psG = new PrintStream(System.out);
 	public static ArrayList<cli> clientesConectados = new ArrayList<>();
 	
 	void iniciarServidor() {
@@ -23,26 +24,28 @@ public class Server {
 		serv.start();
 	}//end iniciarServidor
 	
-	public static void gestionarPartida(cli X, cli O, boolean partidaFinalizada){
+	//el problema podría ser que es todo estático
+	public static void gestionarPartida(cli X, cli O){
 		Tablero partida = new Tablero();
 		String respuesta = "";
 		boolean valido = false;
 		String estado = notificarEstadoJuego(partida, "X", "O");
-		partidaFinalizada = false;
 		
-		while(X.isConected && O.isConected && !partidaFinalizada) {
+		while(X.isConnected && O.isConnected) {
 			try {
 				partida.mostrarTablero(X.dos, X);
 				partida.mostrarTablero(O.dos, O);
 				
 				O.dos.writeUTF("Es el turno del jugador X, por favor espere...");
 				respuesta = mostrarOpciones(X.dos, X.dis, X);
+				psG.println(respuesta);
 				valido = validarMovimiento(partida, respuesta);
 				while(!valido) {
 					respuesta = mostrarOpciones(X.dos, X.dis, X);
+					psG.println(respuesta);
 					valido = validarMovimiento(partida, respuesta);
 				}//end while
-				partida.colocarSimbolo(Integer.valueOf(respuesta.charAt(0)), Integer.valueOf(respuesta.charAt(0)), "X");
+				partida.colocarSimbolo(Integer.valueOf(respuesta.charAt(0)), Integer.valueOf(respuesta.charAt(1)), "X");
 				valido = false;
 				
 				estado = notificarEstadoJuego(partida, "X", "O");
@@ -59,17 +62,18 @@ public class Server {
 					
 					X.dos.writeUTF("Partida Finalizada");
 					O.dos.writeUTF("Partida Finalizada");
-					partidaFinalizada = true;
 				}//end if
 				
 				X.dos.writeUTF("Es el turno del jugador O, por favor espere...");
 				respuesta = mostrarOpciones(O.dos, O.dis, O);
+				psG.println(respuesta);
 				valido = validarMovimiento(partida, respuesta);
 				while(!valido) {
 					respuesta = mostrarOpciones(O.dos, O.dis, O);
+					psG.println(respuesta);
 					valido = validarMovimiento(partida, respuesta);
 				}//end while
-				partida.colocarSimbolo(Integer.valueOf(respuesta.charAt(0)), Integer.valueOf(respuesta.charAt(0)), "O");
+				partida.colocarSimbolo(Integer.valueOf(respuesta.charAt(0)), Integer.valueOf(respuesta.charAt(1)), "O");
 				valido = false;
 				
 				if (estado == "X" || estado == "O" || estado == "Empate") {
@@ -85,10 +89,11 @@ public class Server {
 					
 					X.dos.writeUTF("Partida Finalizada");
 					O.dos.writeUTF("Partida Finalizada");
-					partidaFinalizada = true;
 				}//end if
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				//ps.println("Ha ocurrido un error en gestionarPartida()");
+				e.printStackTrace();
+			} catch (Exception e) {
 				e.printStackTrace();
 			}//end try/catch
 			
@@ -117,14 +122,13 @@ public class Server {
                 break;
             case 0:
             	jugador.dos.writeUTF("¡Saliendo del programa! Gracias por probar :3");
-                jugador.isConected = false;
+                jugador.isConnected = false;
                 break;
             default:
             	jugador.dos.writeUTF("Opción inválida. Por favor, ingrese un número de las opciones.");
 			}//end switch/case
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}//end try/catch
 		
@@ -136,7 +140,7 @@ public class Server {
 	}//end realizarMovimiento
 	
 	private static boolean validarMovimiento(Tablero tablero, String res) {
-		if (res != "" && res.length() <2) {
+		if (res != "" && res.length() <= 2) {
 			Integer fila = Integer.valueOf(res.charAt(0));
 			Integer columna = Integer.valueOf(res.charAt(1));
 			
@@ -174,7 +178,7 @@ class cli implements Runnable {
 
 	DataOutputStream dos;
 	DataInputStream dis;
-	boolean isConected;
+	boolean isConnected;
 
 	public cli(Socket sock, String nick, DataInputStream in, DataOutputStream out) {
 		this.nick = nick;
@@ -182,26 +186,25 @@ class cli implements Runnable {
 		this.dis = in;
 		this.dos = out;
 
-		this.isConected = true;
+		this.isConnected = true;
 		this.hilo = new Thread(this, nick);
 	}//end cli
 
 	public void run() {
-		/*
-		 * String msgRecibido = "";
+		 String msgRecibido = "";
 		 
 
-		while (sock.isConnected() && this.isConected) {
+		while (sock.isConnected() && this.isConnected) {
 			try {
+				
 				msgRecibido = dis.readUTF();
-
 				ps.println("\n" + colors.YELLOW + "El cliente " + this.nick + " envia:" + msgRecibido + colors.RESET);
-				this.dos.writeUTF(msgRecibido);
+				//this.dos.writeUTF(msgRecibido);
 
 				if (msgRecibido == "0") {
 						this.dis.close();
 						this.dos.close();
-						this.isConected = false;
+						this.isConnected = false;
 						this.sock.close();
 						Server.clientesConectados.remove(this); 
 						ps.println( colors.YELLOW + "\tCliente " + this.nick + " se ha desconectado.\n" + colors.RESET );
@@ -213,13 +216,12 @@ class cli implements Runnable {
 				e.printStackTrace();
 			}//end try/catch
 		}//end while
-		*/
 
 	}//end run
 
 	public void notificarClientes(boolean b) {
 		for (cli c : Server.clientesConectados) {
-			if (c.isConected && !c.nick.equals(this.nick)) {
+			if (c.isConnected && !c.nick.equals(this.nick)) {
 				try {
 					if (b) {
 						c.dos.writeUTF(colors.YELLOW + "\t---" + this.nick + " se ha unido al chat---" + colors.RESET);
@@ -246,19 +248,18 @@ class HiloServidor extends Thread {
 	DataInputStream disCliente;
 	DataOutputStream dosCliente;
 	
-	public boolean partidaFinalizada = false;
-
+	cli jugador1;
+	cli jugador2;
+	
 	public HiloServidor() { try { server = new ServerSocket(puerto); } catch (IOException e) { e.printStackTrace(); }//end try/catch 
 	}//end HiloServidor
 
 	@Override
 	public void run() {
-
-		while (partidaFinalizada == false) {
+		while (!(Server.clientesConectados.size() >= 2)) {
 			try {
 				ps.println("Esperando conexión con un cliente");
 				sockAux = server.accept();
-
 				ps.println(colors.PURPLE + "Cliente conectado: " + sockAux.getInetAddress().getHostAddress()
 						+ colors.RESET);
 
@@ -273,20 +274,38 @@ class HiloServidor extends Thread {
 
 				Server.clientesConectados.add(newCliente);
 				newCliente.hilo.start();
-
-				if (Server.clientesConectados.size() >= 2){ 
-					cli jugador1 = Server.clientesConectados.get(0); 
-					cli jugador2 = Server.clientesConectados.get(1);
-					//jugador1.dos.writeUTF("TRUE");
-					//jugador2.dos.writeUTF("TRUE");
-					Server.gestionarPartida(jugador1, jugador2, partidaFinalizada);
-				}//end if
-				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}//end try/catch
-
 		}//end while
+
+		boolean partidaFinalizada = false;
+		cli jugador1 = Server.clientesConectados.get(0); 
+		cli jugador2 = Server.clientesConectados.get(1);
+		while (partidaFinalizada == false && jugador1.isConnected && jugador2.isConnected) {
+			Server.gestionarPartida(jugador1, jugador2);
+			partidaFinalizada = true;
+		}//end while
+		
+		try {
+			jugador1.dis.close();
+			jugador1.dos.close();
+			jugador1.isConnected = false;
+			jugador1.sock.close();
+			Server.clientesConectados.remove(jugador1); 
+			ps.println( colors.YELLOW + "\tCliente " + jugador1.nick + " se ha desconectado.\n" + colors.RESET );
+			jugador1.notificarClientes(false);
+			
+			jugador2.dis.close();
+			jugador2.dos.close();
+			jugador2.isConnected = false;
+			jugador2.sock.close();
+			Server.clientesConectados.remove(jugador2); 
+			ps.println( colors.YELLOW + "\tCliente " + jugador2.nick + " se ha desconectado.\n" + colors.RESET );
+			jugador1.notificarClientes(false);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}//end try/catch
 
 	}//end run
 }//HiloServidor
