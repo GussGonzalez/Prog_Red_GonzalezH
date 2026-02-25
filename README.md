@@ -3,26 +3,41 @@
 - Mail: gonzalez.h.agustina@gmail.com
 - Mail secundario: gus.g.backup@gmail.com
 - 6to1ra Computación
-- ET32 de14
+- E.T.32 d.e.14
 
 ## Gonzalo Nicolás Consorti
 Profesor de la materia
 
 ## 
 <img src="https://adorotedevote.neocities.org/images/straw.gif" width="600" height="100">
-<!-- No te fijes el link profe, no pude encontrar la fuente original, habían muchas resubidas :( -->
+<!-- No pude encontrar la fuente original, habían muchas resubidas -->
 
 ## 
 
 # Ramas/Branches
-## ClaseIntroducción 1 y 2
-Son las ramas de las primeras 3 o 4 clases antes de manejar bien el repositorio (no había planes de tener TPs y Guías en este repo, originalmente era sólo de las clases así que se dividirían las ramas en base a eso)
+## TP1
+Trabajo práctico realizado en solitario. El manejo de errores se encuentra incompleto, el funcionamiento está completo.
 
-## Clases
-Dentro de esta rama se encontrarán las ramas dedicas al contenido dado en cada clase. Dentro de ellas estarán todas las clases (exceptuando las que ya están en las ramas externas: ClaseIntroduccion, ClaseIntroduccion2) dividas cada una en su rama.
+Contiene gestión de archivos (creación y edición) y manejo I/O sin scanner.
 
-## Guias
-Rama donde se encuentran todas las guias realizadas para la materia.
 
-## TPs
-Rama dedicada a los Trabajos Prácticos realizados para la materia.
+## TP2
+Trabajo práctico realizado en solitario. El manejo de errores se encuentra incompleto, el funcionamiento está parcialmente completo, no se edita correctamente el archivo.
+
+Contiene menú de opciones, manejo I/O sin scanner, conversión de datos, colores, gestión y manejo de archivos (edición y creación).
+
+
+## TP3
+Vacío. No se realizó.
+
+
+## TP Final (conjunto)
+Trabajo final realizado con Ezequiel Zalazar Fernandez. El trabajo se encuentra incompleto y fue parcialmente realizado utilizando inteligencia artificial. No funciona correctamente.
+
+Contiene manejo I/O sin scanner, menú de opciones, OOP (Object-Oriented Programming), manejo de sockets e hilos.
+
+
+## TP Final
+Trabajo final realizado en solitario. El trabajo no funciona correctamente, por lo que se encuentra incompleto. El manejo de errores es la parte más incompleta.
+
+Contiene manejo I/O sin scanner, menú de opciones, transformación de datos, manejo de sockets e hilos (servidor/usuarios) y transmisión de datos usuario-servidor.
